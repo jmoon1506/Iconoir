@@ -1,30 +1,74 @@
 package com.iconoir.b;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
+import android.content.pm.PackageManager;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+
+public class MainActivity extends Activity {
+    PackageManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            Intent intent = getPackageManager().getLaunchIntentForPackage("com.google.android.youtube");
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivityForResult(intent, 1);
-//            overridePendingTransition(0, 0);
-            finish();
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
-        } catch (ActivityNotFoundException e) {
-            // Show a toast message on successful change
-            Toast.makeText(MainActivity.this,
-                    "Could not open YouTube", Toast.LENGTH_SHORT)
-                    .show();
+        pm = getPackageManager();
+        if (!tryLaunchTarget()) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            addGooglePlayListener();
         }
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    }
+
+    protected void onResume() {
+        if (!tryLaunchTarget()) {
+            super.onResume();
+        }
+    }
+
+    private boolean tryLaunchTarget() {
+        if (settingsExists()) {
+            try {
+                Intent intent = pm.getLaunchIntentForPackage("com.google.android.youtube");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, 1);
+                finish();
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
+                return true;
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(MainActivity.this,
+                        "Could not open YouTube", Toast.LENGTH_SHORT)
+                        .show();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean settingsExists(){
+        try {
+            PackageInfo info=pm.getPackageInfo("com.iconoir.settings",
+                    PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public void addGooglePlayListener() {
+        ImageButton btnGooglePlay = (ImageButton) findViewById(R.id.btnGooglePlay);
+        btnGooglePlay.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
     }
 }
