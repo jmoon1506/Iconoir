@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -67,7 +68,15 @@ public class MainActivity extends Activity {
         ImageButton btnGooglePlay = (ImageButton) findViewById(R.id.btnGooglePlay);
         btnGooglePlay.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.apps.maps"));
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(MainActivity.this,
+                            "Could not open Google Play", Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
     }
