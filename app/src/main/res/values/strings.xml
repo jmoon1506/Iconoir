@@ -2,15 +2,42 @@
     <string name="actionBarTitle">Iconoir Settings</string>
 
     <string name="showAllLaunchers">Show All</string>
+    <string name="launcherItemIcon">Icon</string>
 
     <string name="menuAdvanced">Advanced</string>
     <string name="menuAbout">About</string>
 
-    <string-array name="iconoirPackages">
+    <string-array name="iconPackages">
         <item>com.iconoir.A</item>
         <item>com.iconoir.B</item>
         <item>com.iconoir.C</item>
         <item>com.iconoir.D</item>
+        <item>com.iconoir.E</item>
+        <item>com.iconoir.F</item>
+        <item>com.iconoir.G</item>
+        <item>com.iconoir.H</item>
+        <item>com.iconoir.I</item>
+        <item>com.iconoir.J</item>
+        <item>com.iconoir.K</item>
+        <item>com.iconoir.L</item>
+        <item>com.iconoir.M</item>
+        <item>com.iconoir.N</item>
+        <item>com.iconoir.O</item>
+        <item>com.iconoir.P</item>
+        <item>com.iconoir.Q</item>
+        <item>com.iconoir.R</item>
+        <item>com.iconoir.S</item>
+        <item>com.iconoir.T</item>
+        <item>com.iconoir.U</item>
+        <item>com.iconoir.V</item>
+        <item>com.iconoir.W</item>
+        <item>com.iconoir.X</item>
+        <item>com.iconoir.Y</item>
+        <item>com.iconoir.Z</item>
+        <item>com.google.android.youtube</item>
+        <item>com.android.email</item>
+        <item>com.android.music</item>
+
     </string-array>
 
     <!-- Example Interface settings -->

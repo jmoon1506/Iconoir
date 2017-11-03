@@ -24,7 +24,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.iconoir.settings.MainActivity" />
         </activity>
-        <activity android:name=".AboutActivity"/>
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".PackagesActivity"></activity>
     </application>
 
 </manifest>
