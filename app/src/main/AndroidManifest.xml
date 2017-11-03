@@ -18,7 +18,7 @@
         </activity>
         <activity
             android:name=".AdvancedActivity"
-            android:label="@string/title_activity_advanced"
+            android:label="@string/menuAdvanced"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
