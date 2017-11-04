@@ -1,10 +1,11 @@
 <resources>
     <string name="actionBarTitle">Iconoir Settings</string>
+    <string name="actionBarPackages">Choose application</string>
 
     <string name="showAllLaunchers">Show All</string>
     <string name="launcherItemIcon">Icon</string>
 
-    <string name="menuAdvanced">Advanced</string>
+    <string name="menuAdvanced">Advanced Settings</string>
     <string name="menuAbout">About</string>
 
     <string-array name="iconPackages">
@@ -34,9 +35,6 @@
         <item>com.iconoir.X</item>
         <item>com.iconoir.Y</item>
         <item>com.iconoir.Z</item>
-        <item>com.google.android.youtube</item>
-        <item>com.android.email</item>
-        <item>com.android.music</item>
 
     </string-array>
 

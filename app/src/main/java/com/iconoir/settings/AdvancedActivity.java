@@ -103,8 +103,14 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
     private void setupActionBar() {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(false); // disable the button
+            actionBar.setDisplayHomeAsUpEnabled(false); // remove the left caret
+            actionBar.setDisplayShowHomeEnabled(false); // remove the icon
+        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeButtonEnabled(false);      // Disable the button
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false); // Remove the left caret
+            getSupportActionBar().setDisplayShowHomeEnabled(false); // Remove the icon
         }
     }
 

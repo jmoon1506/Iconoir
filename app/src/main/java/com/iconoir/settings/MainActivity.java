@@ -4,36 +4,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     ListView listView;
-    LauncherListAdapter listAdapter;
+    IconListAdapter listAdapter;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     PackageManager packageManager;
+    String currentIconPkg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +46,24 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.advanced:
-                startActivity(new Intent(this, AdvancedActivity.class));
+                Intent intent = new Intent( this, AdvancedActivity.class );
+                intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                        "com.iconoir.settings.AdvancedActivity$InterfacePreferenceFragment" );
+                intent.putExtra( PreferenceActivity.EXTRA_NO_HEADERS, true );
+                startActivity(intent);
                 break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     private void readSharedPreferences() {
         pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
         editor = pref.edit();
-        editor.putString("com.iconoir.B", "com.google.android.youtube");
+//        editor.putString("com.iconoir.B", "com.google.android.youtube");
         editor.putBoolean("showAllEnabled", false);
         editor.commit();
     }
@@ -84,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             launcherMap.put(iconPkg, launchPkg);
         }
 
-        listAdapter = new LauncherListAdapter(this, launcherMap);
+        listAdapter = new IconListAdapter(this, launcherMap);
         listAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
@@ -96,10 +91,24 @@ public class MainActivity extends AppCompatActivity {
         showAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 listAdapter.setShowAll(isChecked);
-//                listAdapter.notifyDataSetChanged();
                 editor.putBoolean("showAllEnabled", isChecked);
                 editor.commit();
             }
         });
+    }
+
+    public void startPackagesActivity(String iconPkg) {
+        currentIconPkg = iconPkg;
+        Intent i = new Intent(this, PackagesActivity.class);
+        startActivityForResult(i, 1);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                String appPkg = data.getStringExtra("appPkg");
+            }
+        }
     }
 }
