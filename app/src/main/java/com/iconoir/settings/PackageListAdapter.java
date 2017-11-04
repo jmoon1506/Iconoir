@@ -14,11 +14,11 @@ import java.util.List;
 
 public class PackageListAdapter extends BaseAdapter {
     List<PackageInfo> packageList;
-    Activity context;
+    PackagesActivity context;
     Boolean showSystemPackages;
     PackageManager packageManager;
 
-    public PackageListAdapter(Activity context, List<PackageInfo> packageList) {
+    public PackageListAdapter(PackagesActivity context, List<PackageInfo> packageList) {
         super();
         this.packageManager = context.getPackageManager();
         this.context = context;
@@ -68,6 +68,10 @@ public class PackageListAdapter extends BaseAdapter {
             holder.text = (TextView) convertView.findViewById(R.id.text);
             holder.text.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    int position=(Integer)v.getTag();
+                    String pkgName = packageManager.getApplicationLabel(
+                            getItem(position).applicationInfo).toString();
+                    context.onBackPressed(pkgName);
 //                    context.startActivity(new Intent(context, PackagesActivity.class));
 //                        TextView t = (TextView) v.findViewById(R.id.textView);
 //                        Toast.makeText(context, t.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -79,6 +83,7 @@ public class PackageListAdapter extends BaseAdapter {
         }
         // Set data
         final PackageInfo packageInfo = (PackageInfo) getItem(position);
+        holder.text.setTag(position);
         holder.text.setText(packageManager.getApplicationLabel(
                 packageInfo.applicationInfo).toString());
         holder.icon.setImageDrawable(packageManager

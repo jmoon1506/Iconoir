@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -40,6 +41,18 @@ public class PackagesActivity extends AppCompatActivity {
         Intent i = new Intent();
         i.putExtras(bundle);
         setResult(RESULT_OK, i);
+        Log.d("TAG", "com.android.mail");
+        super.onBackPressed();
+    }
+
+    public void onBackPressed(String pkgName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("appPkg", pkgName);
+
+        Intent i = new Intent();
+        i.putExtras(bundle);
+        setResult(RESULT_OK, i);
+//        Log.d("TAG", pkgName);
         super.onBackPressed();
     }
 

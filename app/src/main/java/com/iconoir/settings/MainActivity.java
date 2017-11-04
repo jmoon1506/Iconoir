@@ -7,11 +7,15 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +87,12 @@ public class MainActivity extends AppCompatActivity {
         listAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
+//        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+//                Log.d("TAG", listAdapter.getItem(position));
+//            }
+//        });
     }
 
     private void addShowAllListener() {
@@ -108,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String appPkg = data.getStringExtra("appPkg");
+                Log.d("TAG", appPkg);
             }
         }
     }

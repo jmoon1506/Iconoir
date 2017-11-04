@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
@@ -22,11 +23,11 @@ import java.util.Map;
 public class IconListAdapter extends BaseAdapter {
     List<String> iconList;
     Map<String, String> iconMap;
-    Activity context;
+    MainActivity context;
     Boolean showAll;
     PackageManager packageManager;
 
-    public IconListAdapter(Activity context, Map<String, String> iconMap) {
+    public IconListAdapter(MainActivity context, Map<String, String> iconMap) {
         super();
         this.packageManager = context.getPackageManager();
         this.context = context;
@@ -74,6 +75,7 @@ public class IconListAdapter extends BaseAdapter {
         View launcherItem;
         TextView text;
         ImageView icon;
+        String iconPkg;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -91,14 +93,18 @@ public class IconListAdapter extends BaseAdapter {
             if (convertView == null || convertView.getTag() == null) {
                 convertView = inflater.inflate(R.layout.icon_item, null);
                 holder = new ViewHolder();
-
+                holder.iconPkg = getItem(position);
                 holder.launcherItem = convertView.findViewById(R.id.listItem);
                 holder.icon = (ImageView) convertView.findViewById(R.id.icon);
                 holder.text = (TextView) convertView.findViewById(R.id.text);
+
+
                 holder.text.setOnClickListener(new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        context.startActivity(new Intent(context, PackagesActivity.class));
-//                        TextView t = (TextView) v.findViewById(R.id.textView);
+                        int position=(Integer)v.getTag();
+                        context.startPackagesActivity(getItem(position));
+//                        context.startActivity(new Intent(context, PackagesActivity.class));
 //                        Toast.makeText(context, t.getText().toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -107,12 +113,14 @@ public class IconListAdapter extends BaseAdapter {
                 holder = (ViewHolder) convertView.getTag();
             }
             // Set data
+            holder.text.setTag(position);
             holder.text.setText(iconMap.get(getItem(position)));
             int drawableId = getDrawableId(getItem(position));
-            Log.d("TAG", getItem(position));
-            Log.d("TAG", String.valueOf(drawableId));
-
             holder.icon.setImageDrawable(context.getResources().getDrawable(drawableId));
+//            Log.d("TAG", getItem(position));
+//            Log.d("TAG", String.valueOf(drawableId));
+
+
 //            holder.icon.setImageDrawable(context.getResources().getDrawable(getResources().);
 //            if (packageInfo != null) {
 //                holder.icon.setImageDrawable(packageManager.getApplicationIcon(packageInfo.applicationInfo));
