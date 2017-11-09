@@ -1,6 +1,5 @@
 package com.iconoir.settings;
 
-import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
@@ -9,29 +8,22 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
-public class PackageListAdapter extends BaseAdapter {
+public class TargetListAdapter extends BaseAdapter {
     List<PackageInfo> packageList;
-    PackagesActivity context;
+    TargetActivity context;
     Boolean showSystemPackages;
     PackageManager packageManager;
 
-    public PackageListAdapter(PackagesActivity context, List<PackageInfo> packageList) {
+    public TargetListAdapter(TargetActivity context, List<PackageInfo> packageList) {
         super();
         this.packageManager = context.getPackageManager();
         this.context = context;
         this.packageList = packageList;
     }
-
-//    @Override
-//    public boolean isEnabled(int position) {
-//        if(showSystemPackages) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     public void setShowAll(Boolean showSystemPackages) {
         this.showSystemPackages = showSystemPackages;
@@ -69,12 +61,11 @@ public class PackageListAdapter extends BaseAdapter {
             holder.text.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     int position=(Integer)v.getTag();
-                    String pkgName = packageManager.getApplicationLabel(
-                            getItem(position).applicationInfo).toString();
-                    context.onBackPressed(pkgName);
-//                    context.startActivity(new Intent(context, PackagesActivity.class));
-//                        TextView t = (TextView) v.findViewById(R.id.textView);
-//                        Toast.makeText(context, t.getText().toString(), Toast.LENGTH_SHORT).show();
+                    String targetPkg = getItem(position).packageName;
+                    context.onBackPressed(targetPkg);
+//                    Toast.makeText(context,
+//                            targetPkg, Toast.LENGTH_SHORT)
+//                            .show();
                 }
             });
             convertView.setTag(holder);

@@ -7,15 +7,11 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     PackageManager packageManager;
-    String currentIconPkg;
+    Map<String, String> iconTargetMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
         readSharedPreferences();
         loadLauncherList();
         addShowAllListener();
+    }
+
+    @Override
+    protected void onResume() {
+        listAdapter.updateHiddenPositions();
+        super.onResume();
     }
 
     @Override
@@ -67,32 +69,23 @@ public class MainActivity extends AppCompatActivity {
     private void readSharedPreferences() {
         pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
         editor = pref.edit();
-//        editor.putString("com.iconoir.B", "com.google.android.youtube");
         editor.putBoolean("showAllEnabled", false);
         editor.commit();
     }
 
     private void loadLauncherList() {
-        Map<String, String> launcherMap = new HashMap<String, String>();
-
-        List<ApplicationInfo> appsList = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        iconTargetMap = new HashMap<String, String>();
 
         String[] iconPkgList = getResources().getStringArray(R.array.iconPackages);
         for (String iconPkg : iconPkgList) {
-            String launchPkg = pref.getString(iconPkg, "");
-            launcherMap.put(iconPkg, launchPkg);
+            String packagePkg = pref.getString(iconPkg, "");
+            iconTargetMap.put(iconPkg, packagePkg);
         }
 
-        listAdapter = new IconListAdapter(this, launcherMap);
+        listAdapter = new IconListAdapter(this, iconTargetMap);
         listAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
-//        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("TAG", listAdapter.getItem(position));
-//            }
-//        });
     }
 
     private void addShowAllListener() {
@@ -107,18 +100,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void startPackagesActivity(String iconPkg) {
-        currentIconPkg = iconPkg;
-        Intent i = new Intent(this, PackagesActivity.class);
-        startActivityForResult(i, 1);
-    }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
-                String appPkg = data.getStringExtra("appPkg");
-                Log.d("TAG", appPkg);
+                String targetPkg = data.getStringExtra("targetPkg");
+                listAdapter.updateIconPackageMap(targetPkg);
             }
         }
     }

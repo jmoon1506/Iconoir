@@ -3,10 +3,10 @@
     package="com.iconoir.settings">
 
     <application
-        android:label=""
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label=""
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
@@ -25,7 +25,8 @@
                 android:value="com.iconoir.settings.MainActivity" />
         </activity>
         <activity android:name=".AboutActivity" />
-        <activity android:name=".PackagesActivity"></activity>
+        <activity android:name=".TargetActivity" />
+        <activity android:name=".IconInstallActivity"></activity>
     </application>
 
 </manifest>

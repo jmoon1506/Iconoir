@@ -1,17 +1,16 @@
 package com.iconoir.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
@@ -22,30 +21,36 @@ import java.util.Map;
 
 public class IconListAdapter extends BaseAdapter {
     List<String> iconList;
-    Map<String, String> iconMap;
+    Map<String, String> iconTargetMap;
     MainActivity context;
     Boolean showAll;
     PackageManager packageManager;
+    int currentIconPos = -1;
+    List<Integer> hiddenPositions;
 
-    public IconListAdapter(MainActivity context, Map<String, String> iconMap) {
+    public IconListAdapter(MainActivity context, Map<String, String> iconTargetMap) {
         super();
         this.packageManager = context.getPackageManager();
         this.context = context;
-        this.iconMap = iconMap;
         this.iconList = new ArrayList<String>();
-        this.iconList.addAll(iconMap.keySet());
+        this.iconTargetMap = iconTargetMap;
+        this.iconList.addAll(iconTargetMap.keySet());
         Collections.sort(this.iconList);
+        updateHiddenPositions();
     }
 
-//    @Override
-//    public boolean isEnabled(int position) {
-//        if(showAll) {
-//            return true;
-//        }
-//        return false;
-//    }
+    public void updateHiddenPositions() {
 
-    public boolean isPackageInstalled(String targetPackage) {
+        this.hiddenPositions = new ArrayList<>();
+        for (int i = 0; i < this.iconList.size(); i++) {
+            if (!isPackageInstalled(this.iconList.get(i))) {
+                this.hiddenPositions.add(i);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    private boolean isPackageInstalled(String targetPackage) {
         try {
             PackageInfo info=packageManager.getPackageInfo(targetPackage, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
@@ -54,13 +59,36 @@ public class IconListAdapter extends BaseAdapter {
         return true;
     }
 
+    private PackageInfo getPackageInfo(String targetPackage) {
+        try {
+            return packageManager.getPackageInfo(targetPackage, PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
     public void setShowAll(Boolean showAll) {
         this.showAll = showAll;
         notifyDataSetChanged();
     }
 
+    public void updateIconPackageMap(String iconPkg, String targetPkg) {
+        iconTargetMap.put(iconPkg, targetPkg);
+        notifyDataSetChanged();
+    }
+
+    public void updateIconPackageMap(String targetPkg) {
+        iconTargetMap.put(getItem(currentIconPos), targetPkg);
+        currentIconPos = -1;
+        notifyDataSetChanged();
+    }
+
     public int getCount() {
-        return iconList.size();
+        if (showAll) {
+            return iconList.size();
+        } else {
+            return iconList.size() - hiddenPositions.size();
+        }
     }
 
     public String getItem(int position) {
@@ -72,71 +100,85 @@ public class IconListAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        View launcherItem;
+        RelativeLayout row;
         TextView text;
         ImageView icon;
-        String iconPkg;
+        ImageView arrow;
+        ImageView target;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
+        // Shared view
         ViewHolder holder;
         LayoutInflater inflater = context.getLayoutInflater();
-        PackageInfo packageInfo;
-        try {
-            packageInfo = packageManager.getPackageInfo(getItem(position),
-                    PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            packageInfo = null;
-        }
-
-        if (showAll || packageInfo != null) {
-            if (convertView == null || convertView.getTag() == null) {
-                convertView = inflater.inflate(R.layout.icon_item, null);
-                holder = new ViewHolder();
-                holder.iconPkg = getItem(position);
-                holder.launcherItem = convertView.findViewById(R.id.listItem);
-                holder.icon = (ImageView) convertView.findViewById(R.id.icon);
-                holder.text = (TextView) convertView.findViewById(R.id.text);
-
-
-                holder.text.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int position=(Integer)v.getTag();
-                        context.startPackagesActivity(getItem(position));
-//                        context.startActivity(new Intent(context, PackagesActivity.class));
-//                        Toast.makeText(context, t.getText().toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            // Set data
-            holder.text.setTag(position);
-            holder.text.setText(iconMap.get(getItem(position)));
-            int drawableId = getDrawableId(getItem(position));
-            holder.icon.setImageDrawable(context.getResources().getDrawable(drawableId));
-//            Log.d("TAG", getItem(position));
-//            Log.d("TAG", String.valueOf(drawableId));
-
-
-//            holder.icon.setImageDrawable(context.getResources().getDrawable(getResources().);
-//            if (packageInfo != null) {
-//                holder.icon.setImageDrawable(packageManager.getApplicationIcon(packageInfo.applicationInfo));
-//            } else {
-//                holder.icon.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_info_details));
-//            }
-            return convertView;
-
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.item_icon, null);
+            holder = new ViewHolder();
+            holder.row = (RelativeLayout) convertView.findViewById(R.id.row);
+            holder.icon = (ImageView) convertView.findViewById(R.id.icon);
+            holder.arrow = (ImageView) convertView.findViewById(R.id.arrow);
+            holder.target = (ImageView) convertView.findViewById(R.id.target);
+            holder.text = (TextView) convertView.findViewById(R.id.target_text);
+            convertView.setTag(holder);
         } else {
-            convertView = null;
-            return inflater.inflate(R.layout.null_item, null);
+            holder = (ViewHolder) convertView.getTag();
         }
+
+        // Item data
+        if (!showAll) {
+            for (int hiddenIndex : hiddenPositions) {
+                if (hiddenIndex <= position) {
+                    position = position + 1;
+                }
+            }
+        }
+        String iconPkg = getItem(position);
+
+        holder.text.setTag(position);
+        int drawableId = getDrawableId(iconPkg);
+        holder.icon.setImageDrawable(context.getResources().getDrawable(drawableId));
+        if (isPackageInstalled(iconPkg)) {
+            String targetPkg = iconTargetMap.get(iconPkg);
+            PackageInfo targetInfo = getPackageInfo(targetPkg);
+            if (targetInfo != null) {
+                holder.target.setImageDrawable(packageManager.getApplicationIcon(targetInfo.applicationInfo));
+                holder.arrow.setVisibility(View.VISIBLE);
+                holder.target.setVisibility(View.VISIBLE);
+            } else {
+                holder.arrow.setVisibility(View.INVISIBLE);
+                holder.target.setVisibility(View.INVISIBLE);
+            }
+            holder.text.setText(iconTargetMap.get(iconPkg));
+            holder.text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    currentIconPos = (Integer)v.getTag();
+                    Intent i = new Intent(context, TargetActivity.class);
+                    context.startActivityForResult(i, 1);
+                }
+            });
+        } else {
+            holder.arrow.setVisibility(View.INVISIBLE);
+            holder.target.setVisibility(View.INVISIBLE);
+            holder.text.setText("NOT INSTALLED");
+            holder.text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, IconInstallActivity.class);
+                    context.startActivity(i);
+                }
+            });
+        }
+        Animation anim = AnimationUtils.loadAnimation(
+                context, android.R.anim.slide_in_left
+        );
+        anim.setDuration(300);
+        convertView.startAnimation(anim);
+        return convertView;
     }
 
     public static int getDrawableId(String iconPkg) {
-        String parsed = (iconPkg.toLowerCase()).replace(".", "_");
+        String parsed = iconPkg.replace(".", "_");
         try {
             Class c = R.drawable.class;
             Field field = c.getDeclaredField(parsed);
@@ -146,5 +188,4 @@ public class IconListAdapter extends BaseAdapter {
             return -1;
         }
     }
-
 }

@@ -8,17 +8,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class PackagesActivity extends AppCompatActivity {
+public class TargetActivity extends AppCompatActivity {
     ListView listView;
-    PackageListAdapter listAdapter;
+    TargetListAdapter listAdapter;
     PackageManager packageManager;
     SharedPreferences pref;
 
@@ -27,32 +24,19 @@ public class PackagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         packageManager = getPackageManager();
         pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
-        setContentView(R.layout.activity_packages);
+        setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
         setupActionBar();
         loadPackageList();
     }
 
-    @Override
-    public void onBackPressed() {
+    public void onBackPressed(String targetPkg) {
         Bundle bundle = new Bundle();
-        bundle.putString("appPkg", "com.android.mail");
+        bundle.putString("targetPkg", targetPkg);
 
         Intent i = new Intent();
         i.putExtras(bundle);
         setResult(RESULT_OK, i);
-        Log.d("TAG", "com.android.mail");
-        super.onBackPressed();
-    }
-
-    public void onBackPressed(String pkgName) {
-        Bundle bundle = new Bundle();
-        bundle.putString("appPkg", pkgName);
-
-        Intent i = new Intent();
-        i.putExtras(bundle);
-        setResult(RESULT_OK, i);
-//        Log.d("TAG", pkgName);
         super.onBackPressed();
     }
 
@@ -80,7 +64,7 @@ public class PackagesActivity extends AppCompatActivity {
             }
         }
 
-        listAdapter = new PackageListAdapter(this, visibleList);
+        listAdapter = new TargetListAdapter(this, visibleList);
         listAdapter.setShowAll(pref.getBoolean("showSystemPackages", false));
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
