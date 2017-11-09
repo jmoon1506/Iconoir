@@ -13,8 +13,8 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomPanel">
 
-        <ListView
-            android:id="@+id/listView"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -22,7 +22,7 @@
             android:divider="@null"
             android:dividerHeight="0dp">
 
-        </ListView>
+        </android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 
     <RelativeLayout

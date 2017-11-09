@@ -2,24 +2,24 @@ package com.iconoir.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.Switch;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    ListView listView;
-    IconListAdapter listAdapter;
+    RecyclerView iconListView;
+    IconListAdapter iconListAdapter;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     PackageManager packageManager;
@@ -32,14 +32,11 @@ public class MainActivity extends AppCompatActivity {
         setTitle(R.string.actionBarTitle);
         packageManager = getPackageManager();
         readSharedPreferences();
-        loadLauncherList();
-        addShowAllListener();
-    }
 
-    @Override
-    protected void onResume() {
-        listAdapter.updateHiddenPositions();
-        super.onResume();
+        iconListView = (RecyclerView) findViewById(R.id.recyclerView);
+        iconListView.setHasFixedSize(true);
+        iconListView.setLayoutManager(new LinearLayoutManager(this));
+        new LoadIconTask().execute();
     }
 
     @Override
@@ -73,19 +70,23 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
-    private void loadLauncherList() {
-        iconTargetMap = new HashMap<String, String>();
+    public class LoadIconTask extends AsyncTask<String, Void, Integer> {
+        @Override
+        protected Integer doInBackground(String... params) {
+            Integer result = 0;
 
-        String[] iconPkgList = getResources().getStringArray(R.array.iconPackages);
-        for (String iconPkg : iconPkgList) {
-            String packagePkg = pref.getString(iconPkg, "");
-            iconTargetMap.put(iconPkg, packagePkg);
+            iconTargetMap = new HashMap<String, String>();
+            String[] iconPkgList = getResources().getStringArray(R.array.iconPackages);
+            for (String iconPkg : iconPkgList) {
+                String packagePkg = pref.getString(iconPkg, "");
+                iconTargetMap.put(iconPkg, packagePkg);
+            }
+            iconListAdapter = new IconListAdapter(MainActivity.this, iconTargetMap);
+            iconListView.setAdapter(iconListAdapter);
+            addShowAllListener();
+
+            return result; //"Failed to set adapters!";
         }
-
-        listAdapter = new IconListAdapter(this, iconTargetMap);
-        listAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
-        listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(listAdapter);
     }
 
     private void addShowAllListener() {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         showAll.setChecked(pref.getBoolean("showAllEnabled", false));
         showAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                listAdapter.setShowAll(isChecked);
+                iconListAdapter.setShowAll(isChecked);
                 editor.putBoolean("showAllEnabled", isChecked);
                 editor.commit();
             }
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String targetPkg = data.getStringExtra("targetPkg");
-                listAdapter.updateIconPackageMap(targetPkg);
+                iconListAdapter.updateIconPackageMap(targetPkg);
             }
         }
     }
