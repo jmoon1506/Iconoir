@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readSharedPreferences() {
-        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
+        pref = getSharedPreferences("IconoirSettings", MODE_PRIVATE); // 0 - for private mode
         editor = pref.edit();
         editor.putBoolean("showAllEnabled", false);
         editor.commit();
