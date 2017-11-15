@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">B</string>
+    <string name="appName">B</string>
+    <string name="sharedPrefLabel">IconoirSettings</string>
+    <string name="iconoirSettingsPackage">com.iconoir.settings</string>
+    <string name="mainActivityMessage">Please install Iconoir Settings</string>
+    <string name="couldNotOpenMessage">Could not open\u0020</string>
+    <string name="changeTargetMessage">Please choose another application</string>
 </resources>
