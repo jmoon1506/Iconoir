@@ -1,9 +1,9 @@
 package com.iconoir.settings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.CustomViewHolder> {
 //    private TreeMap<String, String> iconTargets;
@@ -39,7 +37,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 //
 //    @Override
 //    public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_icon, null);
+//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_icon, null);
 //        CustomViewHolder viewHolder = new CustomViewHolder(view);
 //        return viewHolder;
 //    }
@@ -237,7 +235,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
     }
 
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     private class ViewHolder {
@@ -274,6 +272,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                 holder.target.setVisibility(View.INVISIBLE);
             }
             holder.target_text.setText(iconTargetMap.get(iconPkg));
+            holder.target_text.setTextColor(Color.WHITE);
             holder.target_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -285,7 +284,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         } else {
             holder.arrow.setVisibility(View.INVISIBLE);
             holder.target.setVisibility(View.INVISIBLE);
-            holder.target_text.setText("NOT INSTALLED");
+            holder.target_text.setText(R.string.notInstalled);
+            holder.target_text.setTextColor(Color.GRAY);
             holder.target_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -309,17 +309,15 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
     }
 
     class CustomViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
+        RelativeLayout listItem;
         ImageView icon;
         ImageView arrow;
         ImageView target;
         TextView target_text;
-//        protected ImageView imageView;
-//        protected TextView textView;
-//
+
         public CustomViewHolder(View view) {
             super(view);
-            this.cardView = (CardView) view.findViewById(R.id.iconCard);
+            this.listItem = (RelativeLayout) view.findViewById(R.id.listItem);
             this.icon = (ImageView) view.findViewById(R.id.icon);
             this.arrow = (ImageView) view.findViewById(R.id.arrow);
             this.target = (ImageView) view.findViewById(R.id.target);
@@ -329,7 +327,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_icon, null);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_icon, null);
         CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
     }

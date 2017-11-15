@@ -8,6 +8,8 @@
     <string name="menuAdvanced">Advanced Settings</string>
     <string name="menuAbout">About</string>
 
+    <string name="notInstalled">Not Installed</string>
+
     <string-array name="iconPackages">
         <item>com.iconoir.a</item>
         <item>com.iconoir.b</item>

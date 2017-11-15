@@ -6,4 +6,6 @@
     <color name="colorPanel">#242424</color>
     <color name="colorBackground">#0c0f14</color>
     <color name="black">#000000</color>
+    <color name="textGrey">#999999</color>
+    <color name="textWhite">#f9f9f9</color>
 </resources>

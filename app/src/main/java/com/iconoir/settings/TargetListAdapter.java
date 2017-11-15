@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class TargetListAdapter extends BaseAdapter {
         ViewHolder holder;
         LayoutInflater inflater = context.getLayoutInflater();
         if (convertView == null || convertView.getTag() == null) {
-            convertView = inflater.inflate(R.layout.package_item, null);
+            convertView = inflater.inflate(R.layout.item_target, null);
             holder = new ViewHolder();
 
             holder.packageItem = convertView.findViewById(R.id.listItem);

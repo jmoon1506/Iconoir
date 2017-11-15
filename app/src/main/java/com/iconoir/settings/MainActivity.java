@@ -33,10 +33,9 @@ public class MainActivity extends AppCompatActivity {
         packageManager = getPackageManager();
         readSharedPreferences();
 
-        iconListView = (RecyclerView) findViewById(R.id.recyclerView);
-        iconListView.setHasFixedSize(true);
-        iconListView.setLayoutManager(new LinearLayoutManager(this));
-        new LoadIconTask().execute();
+        LoadIconList();
+//        new LoadIconTask().execute();
+        addShowAllListener();
     }
 
     @Override
@@ -64,10 +63,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readSharedPreferences() {
-        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
+        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_PRIVATE); // 0 - for private mode
         editor = pref.edit();
         editor.putBoolean("showAllEnabled", false);
         editor.commit();
+    }
+
+    public void LoadIconList() {
+        iconListView = (RecyclerView) findViewById(R.id.recyclerView);
+        iconListView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setItemPrefetchEnabled(false);
+        iconListView.setLayoutManager(llm);
+        iconTargetMap = new HashMap<String, String>();
+        String[] iconPkgList = getResources().getStringArray(R.array.iconPackages);
+        for (String iconPkg : iconPkgList) {
+            String packagePkg = pref.getString(iconPkg, "");
+            iconTargetMap.put(iconPkg, packagePkg);
+        }
+        iconListAdapter = new IconListAdapter(MainActivity.this, iconTargetMap);
+        iconListAdapter.setHasStableIds(true);
+        iconListView.setAdapter(iconListAdapter);
+
     }
 
     public class LoadIconTask extends AsyncTask<String, Void, Integer> {

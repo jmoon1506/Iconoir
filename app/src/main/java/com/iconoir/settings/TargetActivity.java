@@ -23,7 +23,7 @@ public class TargetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         packageManager = getPackageManager();
-        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_WORLD_READABLE); // 0 - for private mode
+        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_PRIVATE); // 0 - for private mode
         setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
         setupActionBar();
