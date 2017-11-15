@@ -10,7 +10,10 @@
 
     <string name="notInstalled">Not Installed</string>
 
-    <string-array name="iconPackages">
+    <string name="iconoirSettingsPackage">com.iconoir.settings</string>
+    <string name="sharedPrefLabel">IconoirSettings</string>
+
+    <string-array name="iconoirPackages">
         <item>com.iconoir.a</item>
         <item>com.iconoir.b</item>
         <item>com.iconoir.c</item>
@@ -37,7 +40,34 @@
         <item>com.iconoir.x</item>
         <item>com.iconoir.y</item>
         <item>com.iconoir.z</item>
+    </string-array>
 
+    <string-array name="validSystemPackages">
+        <item>com.google.android.youtube</item>
+        <item>com.google.android.googlequicksearchbox</item>
+        <item>com.google.android.apps.messaging</item>
+        <item>com.android.vending</item>
+        <item>com.android.contacts</item>
+        <item>com.android.camera2</item>
+        <item>com.google.android.gm</item>
+        <item>com.google.android.dialer</item>
+        <item>com.google.android.music</item>
+        <item>com.google.android.apps.docs</item>
+        <item>com.google.android.apps.maps</item>
+        <item>com.opera.browser</item>
+        <item>com.android.chrome</item>
+        <item>com.google.android.videos</item>
+        <item>com.google.android.apps.photos</item>
+        <item>com.google.android.calendar</item>
+        <item>com.android.settings</item>
+        <item>com.android.calculator2</item>
+        <item>com.android.email</item>
+        <item>com.android.music</item>
+        <item>com.google.android.apps.wallpaper</item>
+        <item>com.google.android.talk</item>
+        <item>com.android.deskclock</item>
+        <item>com.android.deskclock</item>
+        <item>com.android.phone</item>
     </string-array>
 
     <!-- Example Interface settings -->

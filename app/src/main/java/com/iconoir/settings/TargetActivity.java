@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TargetActivity extends AppCompatActivity {
@@ -18,12 +19,18 @@ public class TargetActivity extends AppCompatActivity {
     TargetListAdapter listAdapter;
     PackageManager packageManager;
     SharedPreferences pref;
+    List<String> validSystemPkgs;
+    List<String> iconoirPkgs;
+    String iconoirSettingsPkg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         packageManager = getPackageManager();
         pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_PRIVATE); // 0 - for private mode
+        validSystemPkgs = Arrays.asList(getResources().getStringArray(R.array.validSystemPackages));
+        iconoirPkgs = Arrays.asList(getResources().getStringArray(R.array.iconoirPackages));
+        iconoirSettingsPkg = getResources().getString(R.string.iconoirSettingsPackage);
         setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
         setupActionBar();
@@ -59,7 +66,7 @@ public class TargetActivity extends AppCompatActivity {
         List<PackageInfo> visibleList = new ArrayList<PackageInfo>();
 
         for(PackageInfo pi : packageList) {
-            if(!isSystemPackage(pi)) {
+            if(isValidPackage(pi)) {
                 visibleList.add(pi);
             }
         }
@@ -68,6 +75,15 @@ public class TargetActivity extends AppCompatActivity {
         listAdapter.setShowAll(pref.getBoolean("showSystemPackages", false));
         listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(listAdapter);
+    }
+
+    private boolean isValidPackage(PackageInfo appInfo) {
+        if (isSystemPackage(appInfo)) {
+            // return true;
+           return validSystemPkgs.contains(appInfo.packageName);
+        } else {
+            return !(iconoirPkgs.contains(appInfo.packageName) || iconoirSettingsPkg.equals(appInfo.packageName));
+        }
     }
 
     private boolean isSystemPackage(PackageInfo appInfo) {
