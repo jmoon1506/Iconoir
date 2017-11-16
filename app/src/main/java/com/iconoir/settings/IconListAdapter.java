@@ -2,6 +2,7 @@ package com.iconoir.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -37,7 +38,6 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         this.iconTargetMap = iconTargetMap;
         this.iconList.addAll(iconTargetMap.keySet());
         Collections.sort(this.iconList);
-        updateHiddenPositions();
     }
 
     public void updateHiddenPositions() {
@@ -128,7 +128,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                 holder.arrow.setVisibility(View.INVISIBLE);
                 holder.target.setVisibility(View.INVISIBLE);
             }
-            holder.target_text.setText(iconTargetMap.get(iconPkg));
+            holder.target_text.setText(getPackageLabel(iconTargetMap.get(iconPkg)));
             holder.target_text.setTextColor(Color.WHITE);
             holder.target_text.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -187,5 +187,14 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_icon, null);
         CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
+    }
+
+    public String getPackageLabel(String pkgName) {
+        try {
+            ApplicationInfo app = packageManager.getApplicationInfo(pkgName, 0);
+            return (String) packageManager.getApplicationLabel(app);
+        } catch (PackageManager.NameNotFoundException e) {
+            return pkgName;
+        }
     }
 }

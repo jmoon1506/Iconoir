@@ -2,6 +2,7 @@ package com.iconoir.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -48,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        iconListAdapter.updateHiddenPositions();
+        super.onResume();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
@@ -71,12 +79,30 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            String callFromIcon = getIntent().getExtras().getString("callFromIcon", "");
+            if (!callFromIcon.equals("")) {
+                try {
+                    Intent intent = packageManager.getLaunchIntentForPackage(
+                            callFromIcon);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } catch (Exception e) {
+                }
+            }
+        }
+        super.onBackPressed();
+    }
+
     private void readSharedPreferences() {
         pref = getApplicationContext().getSharedPreferences(
-                getString(R.string.sharedPrefLabel), MODE_PRIVATE);
+                getString(R.string.sharedPrefLabel), MODE_PRIVATE | MODE_MULTI_PROCESS);
         editor = pref.edit();
         editor.putBoolean("showAllEnabled", false);
-        editor.commit();
+        editor.apply();
     }
 
     @NonNull
@@ -135,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 iconListAdapter.setShowAll(isChecked);
                 editor.putBoolean("showAllEnabled", isChecked);
-                editor.commit();
+                editor.apply();
             }
         });
     }
@@ -145,11 +171,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String targetPkg = data.getStringExtra("targetPkg");
-//                editor.putString("showAllEnabled", false);
                 String iconPkg = iconListAdapter.updateIconPackageMap(targetPkg);
                 editor.putString(iconPkg, targetPkg);
-                editor.commit();
+                editor.apply();
             }
         }
     }
+
+
 }

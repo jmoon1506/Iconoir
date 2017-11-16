@@ -3,6 +3,7 @@ package com.iconoir.settings;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,8 +14,10 @@ import android.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.view.View;
 
 import java.util.List;
 
@@ -30,36 +33,40 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class AdvancedActivity extends AppCompatPreferenceActivity {
+    SharedPreferences pref;
+    SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
-        }
-    };
+//    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+//        @Override
+//        public boolean onPreferenceChange(Preference preference, Object value) {
+////            String stringValue = value.toString();
+//            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+//            if (value instanceof String) {
+//                pref.edit().putString(preference.getKey(), value.toString()).apply();
+//            } else if (value instanceof Boolean) {
+//                pref.edit().putBoolean(preference.getKey(), (Boolean) value).apply();
+//            }
+////            putString("otherKey","value").commit();
+////            if (preference instanceof ListPreference) {
+////                // For list preferences, look up the correct display value in
+////                // the preference's 'entries' list.
+////                ListPreference listPreference = (ListPreference) preference;
+////                int index = listPreference.findIndexOfValue(stringValue);
+////
+////                // Set the summary to reflect the new value.
+////                preference.setSummary(
+////                        index >= 0
+////                                ? listPreference.getEntries()[index]
+////                                : null);
+////
+////            } else {
+////                // For all other preferences, set the summary to the value's
+////                // simple string representation.
+////                preference.setSummary(stringValue);
+////            }
+//            return true;
+//        }
+//    };
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -77,25 +84,66 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
      * immediately updated upon calling this method. The exact display format is
      * dependent on the type of preference.
      *
-     * @see #sBindPreferenceSummaryToValueListener
      */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
+//    private static void bindPreferenceSummaryToValue(Preference preference) {
+//        // Set the listener to watch for value changes.
+//        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+//
+//        // Trigger the listener immediately with the preference's
+//        // current value.
+//        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+//                PreferenceManager
+//                        .getDefaultSharedPreferences(preference.getContext())
+//                        .getString(preference.getKey(), ""));
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals("setBackgroundColor")) {
+                    pref.edit().putString("backgroundColor",
+                            sharedPreferences.getString(key, "")).apply();
+                } else if (key.equals("showOnlyIconoir")) {
+                    pref.edit().putBoolean("showOnlyIconoir",
+                            sharedPreferences.getBoolean(key, false)).apply();
+                } else if (key.equals("showSystemPkgs")) {
+                    pref.edit().putBoolean("showSystemPkgs",
+                            sharedPreferences.getBoolean(key, false)).apply();
+                }
+            }
+        };
         setupActionBar();
+        super.onCreate(savedInstanceState);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pref.registerOnSharedPreferenceChangeListener(prefListener);
+        return;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pref.unregisterOnSharedPreferenceChangeListener(prefListener);
+    }
+
+//    @Override
+//    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+//                                          String key) {
+//        if (key.equals("setBackgroundColor")) {
+//            pref.edit().putString("backgroundColor", sharedPreferences.getString(key, "")).apply();
+//        } else if (key.equals("showOnlyIconoir")) {
+//            pref.edit().putBoolean("showOnlyIconoir", sharedPreferences.getBoolean(key, false)).apply();
+//        } else if (key.equals("showSystemPkgs")) {
+//            pref.edit().putBoolean("showSystemPkgs", sharedPreferences.getBoolean(key, false)).apply();
+//        }
+//        return;
+//    }
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -169,8 +217,10 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            bindPreferenceSummaryToValue(findPreference("example_text"));
+//            bindPreferenceSummaryToValue(findPreference("setBackgroundColor"));
+//            bindPreferenceSummaryToValue(findPreference("showOnlyIconoir"));
+//            bindPreferenceSummaryToValue(findPreference("showSystemPkgs"));
         }
 
         @Override

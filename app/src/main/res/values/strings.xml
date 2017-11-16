@@ -71,17 +71,11 @@
     </string-array>
 
     <!-- Example Interface settings -->
-    <string name="pref_header_interface">Interface</string>
+    <string name="pref_header_interface">Advanced Settings</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string name="pref_title_set_background_color">Set background</string>
+    <string name="pref_summary_set_background_color">Match your icons with a unique Iconoir color</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
@@ -93,5 +87,10 @@
         <item>-1</item>
     </string-array>
 
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla mollis id quam ultrices rhoncus. Vestibulum tincidunt rhoncus accumsan. Sed ipsum risus, tincidunt ac laoreet non, gravida a massa. Mauris sed lorem commodo, lacinia nulla ut, cursus lorem. Donec vel egestas ex. Praesent justo odio, laoreet sit amet tempus quis, interdum eget ante. Proin et imperdiet urna. Aenean diam arcu, tristique eu laoreet vel, ullamcorper eu purus. Sed pretium sodales elit, et dictum tellus fringilla ut. Donec eleifend vitae massa at vulputate. In ornare accumsan eros. Aliquam dictum porta nunc. Nulla ut arcu feugiat, malesuada erat a, feugiat magna. Quisque auctor elit vel rhoncus tempor. Aenean risus mi, consequat in nisi at, placerat tempus massa.</string>
+    <string name="pref_title_show_only_iconoir">Pure Iconoir environment</string>
+    <string name="pref_description_show_only_iconoir">Hide all other icons on the home screen</string>
+
+    <string name="pref_title_show_system_pkgs">Allow hidden system apps</string>
+    <string name="pref_description_show_system_pkgs">Some may not function correctly</string>
+
 </resources>
