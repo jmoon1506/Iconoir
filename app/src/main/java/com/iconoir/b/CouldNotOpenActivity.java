@@ -2,15 +2,19 @@ package com.iconoir.b;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class CouldNotOpenActivity extends AppCompatActivity {
+    private boolean hasRun = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +22,28 @@ public class CouldNotOpenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_could_not_open);
         String targetPkg = getIntent().getExtras().getString("targetPkg", "");
         TextView msg = (TextView) findViewById(R.id.couldNotOpenMsg);
-        msg.setText(getString(R.string.couldNotOpenMessage) + targetPkg);
+        msg.setText(getString(R.string.couldNotOpenMessage) + getPackageLabel(targetPkg));
+        addSettingsListener();
+        hasRun = false;
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (hasRun) {
+            Intent intent = new Intent(this, MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            overridePendingTransition(0, 0);
+            startActivity(intent);
+
+        } else {
+            hasRun = true;
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        moveTaskToBack(true);
     }
 
     public void addSettingsListener() {
@@ -28,6 +53,8 @@ public class CouldNotOpenActivity extends AppCompatActivity {
                 try {
                     Intent intent = getPackageManager().getLaunchIntentForPackage(
                             getString(R.string.iconoirSettingsPackage));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("callFromIcon", getApplicationContext().getPackageName());
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
 
@@ -37,5 +64,14 @@ public class CouldNotOpenActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String getPackageLabel(String pkgName) {
+        try {
+            ApplicationInfo app = getPackageManager().getApplicationInfo(pkgName, 0);
+            return (String) getPackageManager().getApplicationLabel(app);
+        } catch (PackageManager.NameNotFoundException e) {
+            return pkgName;
+        }
     }
 }

@@ -5,7 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,24 +24,37 @@ public class MainActivity extends Activity {
     String targetPkg;
     PackageManager pm;
     SharedPreferences pref;
+    SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        overridePendingTransition(0, 0);
+        super.onCreate(savedInstanceState);
         packageName = getApplicationContext().getPackageName();
         pm = getPackageManager();
-        readSharedPreferences();
-        if (!tryLaunchTarget()) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            addGooglePlayListener();
-        }
+//        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+//                targetPkg = pref.getString(packageName, "");
+//                Log.d("PKG", "CHANGE");
+//                Log.d("PKG", targetPkg);
+//            }
+//        };
+
+        tryLaunch();
+        setContentView(R.layout.activity_main);
+        addGooglePlayListener();
+
     }
 
+    @Override
     protected void onResume() {
-        readSharedPreferences();
-        if (!tryLaunchTarget()) {
-            super.onResume();
+        super.onResume();
+        tryLaunch();
+    }
+
+    private void tryLaunch() {
+        if (settingsExists()) {
+            readSharedPreferences();
+            tryLaunchTarget();
         }
     }
 
@@ -57,39 +72,47 @@ public class MainActivity extends Activity {
             System.out.println("DB error : " + e.getMessage());
             return;
         }
+
         pref = sharedContext.getSharedPreferences(getString(R.string.sharedPrefLabel),
-                Activity.MODE_PRIVATE);
+                Activity.MODE_PRIVATE | MODE_MULTI_PROCESS);
+//        pref.registerOnSharedPreferenceChangeListener(listener);
         targetPkg = pref.getString(packageName, "");
+//        Log.d("PKG", targetPkg);
     }
 
-    private boolean tryLaunchTarget() {
-        if (settingsExists()) {
-            try {
-                Intent intent = pm.getLaunchIntentForPackage(targetPkg);
+    private void tryLaunchTarget() {
+        try {
+            Intent intent = pm.getLaunchIntentForPackage(targetPkg);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivityForResult(intent, 1);
+            finish();
+            startActivityForResult(intent, 1);
+            overridePendingTransition(android.R.anim.fade_in, 0);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+        } catch (Exception e) {
+            if (targetPkg.equals(getString(R.string.androidPhonePackage))) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                finish();
                 startActivityForResult(intent, 1);
                 overridePendingTransition(android.R.anim.fade_in, 0);
-                finish();
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(1);
-                return true;
-            } catch (Exception e) {
-                Intent intent = new Intent( this, CouldNotOpenActivity.class );
+            } else {
+                Intent intent = new Intent(this, CouldNotOpenActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("targetPkg", targetPkg);
+                overridePendingTransition(0, 0);
                 startActivity(intent);
-                Toast.makeText(MainActivity.this,
-                        "Could not open " + targetPkg, Toast.LENGTH_SHORT)
-                        .show();
-                return false;
+//            Toast.makeText(MainActivity.this,"Could not open " + targetPkg, Toast.LENGTH_SHORT).show();
             }
-        } else {
-            return false;
         }
     }
 
     private boolean settingsExists(){
         try {
-            PackageInfo info=pm.getPackageInfo("com.iconoir.settings",
+            PackageInfo info=pm.getPackageInfo(getString(R.string.iconoirSettingsPackage),
                     PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             return false;
@@ -113,4 +136,6 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+
 }
