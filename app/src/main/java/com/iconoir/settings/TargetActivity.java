@@ -9,15 +9,20 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class TargetActivity extends AppCompatActivity {
+    RecyclerView targetListView;
+    TargetListAdapter targetListAdapter;
     ListView listView;
     TargetListAdapter listAdapter;
     PackageManager packageManager;
@@ -39,6 +44,12 @@ public class TargetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
         setupActionBar();
+
+        targetListView = (RecyclerView) findViewById(R.id.recyclerView);
+        targetListView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setItemPrefetchEnabled(true);
+        targetListView.setLayoutManager(llm);
     }
 
     @Override
@@ -85,10 +96,9 @@ public class TargetActivity extends AppCompatActivity {
             }
         }
 
-        listAdapter = new TargetListAdapter(this, visibleList, packageMap);
-        listAdapter.setShowAll(pref.getBoolean("showSystemPkgs", false));
-        listView = findViewById(R.id.listView);
-        listView.setAdapter(listAdapter);
+        targetListAdapter = new TargetListAdapter(this, visibleList, packageMap);
+        targetListAdapter.setHasStableIds(true);
+        targetListView.setAdapter(targetListAdapter);
     }
 
     private boolean isValidPackage(PackageInfo appInfo) {

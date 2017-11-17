@@ -48,6 +48,7 @@
         <item>com.google.android.apps.messaging</item>
         <item>com.android.vending</item>
         <item>com.android.contacts</item>
+        <item>com.android.camera</item>
         <item>com.android.camera2</item>
         <item>com.google.android.gm</item>
         <item>com.google.android.dialer</item>
@@ -60,12 +61,12 @@
         <item>com.google.android.apps.photos</item>
         <item>com.google.android.calendar</item>
         <item>com.android.settings</item>
+        <item>com.android.calculator</item>
         <item>com.android.calculator2</item>
         <item>com.android.email</item>
         <item>com.android.music</item>
         <item>com.google.android.apps.wallpaper</item>
         <item>com.google.android.talk</item>
-        <item>com.android.deskclock</item>
         <item>com.android.deskclock</item>
         <item>com.android.phone</item>
     </string-array>

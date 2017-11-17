@@ -128,7 +128,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                 holder.arrow.setVisibility(View.INVISIBLE);
                 holder.target.setVisibility(View.INVISIBLE);
             }
-            holder.target_text.setText(getPackageLabel(iconTargetMap.get(iconPkg)));
+            holder.target_text.setText(iconTargetMap.get(iconPkg));
+//            holder.target_text.setText(getPackageLabel(iconTargetMap.get(iconPkg)));
             holder.target_text.setTextColor(Color.WHITE);
             holder.target_text.setOnClickListener(new View.OnClickListener() {
                 @Override
