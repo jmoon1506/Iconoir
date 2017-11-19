@@ -50,7 +50,7 @@ public class TargetActivity extends AppCompatActivity {
         iconoirSettingsPkg = getResources().getString(R.string.iconoirSettingsPackage);
         setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
-        setupActionBar();
+//        setupActionBar();
 
         targetListView = (RecyclerView) findViewById(R.id.recyclerView);
         targetListView.setHasFixedSize(true);

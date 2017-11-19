@@ -118,7 +118,8 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
                 }
             }
         };
-        setupActionBar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        setupActionBar();
     }
 
     @Override
@@ -131,6 +132,17 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
     protected void onPause() {
         super.onPause();
         pref.unregisterOnSharedPreferenceChangeListener(prefListener);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 //    @Override
