@@ -1,6 +1,7 @@
 package com.iconoir.settings;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -57,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         if (Build.VERSION.SDK_INT >= 26) {
             ChangedPackages changes = packageManager.getChangedPackages(pkgChangeSequence);
@@ -64,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
                 pkgChangeSequence = changes.getSequenceNumber();
                 iconListAdapter.updateHiddenPositions();
             }
+        }
+
+        Boolean hideOtherIcons = pref.getBoolean("showOnlyIconoir", false);
+        if (hideOtherIcons) {
+            ComponentName componentName = new ComponentName(this, "com.google.android.youtube");
+            packageManager.setComponentEnabledSetting(componentName,packageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    packageManager.DONT_KILL_APP);
         }
         super.onResume();
     }

@@ -29,7 +29,6 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
         this.context = context;
         this.packageList = packageList;
         this.packageMap = packageMap;
-        Collections.sort(this.packageList);
     }
 
     @Override

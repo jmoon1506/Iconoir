@@ -2,18 +2,22 @@ package com.iconoir.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.DialogPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
@@ -98,17 +102,16 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
 //                        .getString(preference.getKey(), ""));
 //    }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equals("setBackgroundColor")) {
-                    pref.edit().putString("backgroundColor",
-                            sharedPreferences.getString(key, "")).apply();
-                } else if (key.equals("showOnlyIconoir")) {
-                    pref.edit().putBoolean("showOnlyIconoir",
-                            sharedPreferences.getBoolean(key, false)).apply();
+                if (key.equals("setBackground")) {
+//                    pref.edit().putString("backgroundColor", sharedPreferences.getString(key, "")).apply();
                 } else if (key.equals("showSystemPkgs")) {
                     pref.edit().putBoolean("showSystemPkgs",
                             sharedPreferences.getBoolean(key, false)).apply();
@@ -116,14 +119,12 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
             }
         };
         setupActionBar();
-        super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         pref.registerOnSharedPreferenceChangeListener(prefListener);
-        return;
     }
 
     @Override
@@ -212,15 +213,6 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_interface);
             setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-//            bindPreferenceSummaryToValue(findPreference("example_text"));
-//            bindPreferenceSummaryToValue(findPreference("setBackgroundColor"));
-//            bindPreferenceSummaryToValue(findPreference("showOnlyIconoir"));
-//            bindPreferenceSummaryToValue(findPreference("showSystemPkgs"));
         }
 
         @Override

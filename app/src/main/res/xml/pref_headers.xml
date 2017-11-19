@@ -5,6 +5,6 @@
     <header
         android:fragment="com.iconoir.settings.AdvancedActivity$InterfacePreferenceFragment"
         android:icon="@android:drawable/ic_menu_manage"
-        android:title="@string/pref_header_interface" />
+        android:title="@string/prefTitle" />
 
 </preference-headers>

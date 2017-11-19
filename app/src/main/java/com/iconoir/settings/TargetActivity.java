@@ -1,11 +1,16 @@
 package com.iconoir.settings;
 
 import android.app.ActionBar;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ChangedPackages;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +36,8 @@ public class TargetActivity extends AppCompatActivity {
     List<String> iconoirPkgs;
     String iconoirSettingsPkg;
     boolean showAllSystemPkgs = false;
+    PkgChangeReceiver broadcastReceiver;
+    Integer pkgChangeSequence = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +57,46 @@ public class TargetActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setItemPrefetchEnabled(true);
         targetListView.setLayoutManager(llm);
+
+        if (Build.VERSION.SDK_INT < 26) {
+            broadcastReceiver = new PkgChangeReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_INSTALL);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            intentFilter.addDataScheme("package");
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
+        loadPackageList();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
+
+    public class PkgChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadPackageList();
+        }
     }
 
     @Override
     protected void onResume() {
-        showAllSystemPkgs = pref.getBoolean("showSystemPkgs", false);
-        loadPackageList();
+        if (Build.VERSION.SDK_INT >= 26) {
+            ChangedPackages changes = packageManager.getChangedPackages(pkgChangeSequence);
+            if (changes != null) {
+                pkgChangeSequence = changes.getSequenceNumber();
+                loadPackageList();
+            }
+        }
+        Boolean newShowSystemPkgs = pref.getBoolean("showSystemPkgs", false);
+        if (newShowSystemPkgs != showAllSystemPkgs) {
+            showAllSystemPkgs = newShowSystemPkgs;
+            loadPackageList();
+        }
         super.onResume();
     }
 
@@ -85,16 +126,15 @@ public class TargetActivity extends AppCompatActivity {
 
     private void loadPackageList() {
         List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
-        List<String> visibleList = new ArrayList<String>();
         Map<String, PackageInfo> packageMap = new TreeMap<>();
 
         for(PackageInfo pi : packageList) {
             if(isValidPackage(pi)) {
                 final String pkgName = packageManager.getApplicationLabel(pi.applicationInfo).toString();
                 packageMap.put(pkgName, pi);
-                visibleList.add(pkgName);
             }
         }
+        List<String> visibleList = new ArrayList<String>(packageMap.keySet());
 
         targetListAdapter = new TargetListAdapter(this, visibleList, packageMap);
         targetListAdapter.setHasStableIds(true);
@@ -103,11 +143,7 @@ public class TargetActivity extends AppCompatActivity {
 
     private boolean isValidPackage(PackageInfo appInfo) {
         if (isSystemPackage(appInfo)) {
-            if (showAllSystemPkgs) {
-                return true;
-            } else {
-                return validSystemPkgs.contains(appInfo.packageName);
-            }
+            return showAllSystemPkgs || validSystemPkgs.contains(appInfo.packageName);
         } else {
             return !(iconoirPkgs.contains(appInfo.packageName) || iconoirSettingsPkg.equals(appInfo.packageName));
         }

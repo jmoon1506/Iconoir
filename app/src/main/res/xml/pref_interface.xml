@@ -1,25 +1,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_example_list_titles"
-        android:entryValues="@array/pref_example_list_values"
-        android:key="setBackgroundColor"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_set_background_color"
-        android:summary="@string/pref_summary_set_background_color"/>
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="showOnlyIconoir"
-        android:summary="@string/pref_description_show_only_iconoir"
-        android:title="@string/pref_title_show_only_iconoir" />
+    <com.iconoir.settings.SetWallpaperPreference
+        android:key="setBackground"
+        android:summary="@string/prefDescSetBackground"
+        android:title="@string/prefTitleSetBackground"
+        android:dialogMessage="@string/prefDescSetBackground"
+        android:positiveButtonText="Confirm"
+        android:negativeButtonText="Cancel"/>
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="showSystemPkgs"
-        android:summary="@string/pref_description_show_system_pkgs"
-        android:title="@string/pref_title_show_system_pkgs" />
+        android:summary="@string/prefDescAllowHiddenPackages"
+        android:title="@string/prefTitleAllowHiddenPackages" />
 
 </PreferenceScreen>

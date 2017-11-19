@@ -72,26 +72,44 @@
     </string-array>
 
     <!-- Example Interface settings -->
-    <string name="pref_header_interface">Advanced Settings</string>
+    <string name="prefTitle">Advanced Settings</string>
 
+    <string name="prefTitleSetBackground">Set Iconoir background</string>
+    <string name="prefDescSetBackground">Will reversibly change your current wallpaper</string>
 
-    <string name="pref_title_set_background_color">Set background</string>
-    <string name="pref_summary_set_background_color">Match your icons with a unique Iconoir color</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
+    <string name="prefTitleAllowHiddenPackages">Allow hidden system apps</string>
+    <string name="prefDescAllowHiddenPackages">Some may not function correctly</string>
 
-    <string name="pref_title_show_only_iconoir">Pure Iconoir environment</string>
-    <string name="pref_description_show_only_iconoir">Hide all other icons on the home screen</string>
+    <string name="aboutText">Iconoir (1.01)</string>
+    <string name="aboutWebsite">https://www.iconoir.com</string>
+    <string name="aboutEmail">iconoirdev@gmail.com</string>
+    <string name="aboutTwitterValue">iconoirdev</string>
+    <string name="aboutInstagramValue">iconoirdev</string>
+    <string name="aboutFacebookValue">iconoirdev</string>
+    <string name="aboutPlayStoreValue">com.iconoir.settings</string>
 
-    <string name="pref_title_show_system_pkgs">Allow hidden system apps</string>
-    <string name="pref_description_show_system_pkgs">Some may not function correctly</string>
+    <string name="aboutTwitter">Twitter</string>
+    <string name="aboutInstagram">Instagram</string>
+    <string name="aboutFacebook">Facebook</string>
+    <string name="aboutPlayStore">Play Store</string>
 
+    <string name="aboutLicenses">Licenses</string>
+
+    <string name="loremIpsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac justo sed lacus vestibulum mollis dapibus non nisi. Mauris a metus suscipit, tempor nibh vitae, sodales urna. Sed malesuada interdum finibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur in auctor leo. Morbi posuere mauris vitae erat pretium, in lacinia mi malesuada. Donec sodales lacus sapien, eu blandit urna lobortis ut. Aenean sit amet rhoncus lectus. Nunc elit metus, mollis vitae pellentesque sit amet, bibendum eget massa. Nam viverra aliquam egestas. Suspendisse sollicitudin vehicula elit id dictum. Duis quam risus, ornare ut enim nec, pharetra auctor lorem.</string>
+
+    <string name="license1">Sectioned Recyclerview</string>
+    <string name="license1Text">
+Copyright 2016 Aidan Follestad\n
+Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at\n\n
+http://www.apache.org/licenses/LICENSE-2.0\n\n
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+    </string>
+
+    <string name="license2">Android About Page</string>
+    <string name="license2Text">
+Copyright 2016 Mehdi Sakout\n
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\n
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\n
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n
+    </string>
 </resources>
