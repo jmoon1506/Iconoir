@@ -1,27 +1,23 @@
 package com.iconoir.settings;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.ChangedPackages;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceActivity;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     PackageManager packageManager;
     Map<String, String> iconTargetMap;
+    PkgChangeReceiver broadcastReceiver;
+    Integer pkgChangeSequence = 0;
 
     private static final String SHARED_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
     private static final String SHARED_FOLDER = "shared";
@@ -44,15 +42,37 @@ public class MainActivity extends AppCompatActivity {
         packageManager = getPackageManager();
         readSharedPreferences();
 
-        LoadIconList();
+        loadIconList();
 //        new LoadIconTask().execute();
         addShowAllListener();
+        if (Build.VERSION.SDK_INT < 26) {
+            broadcastReceiver = new PkgChangeReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_INSTALL);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            intentFilter.addDataScheme("package");
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
     }
 
     @Override
     protected void onResume() {
-        iconListAdapter.updateHiddenPositions();
+        if (Build.VERSION.SDK_INT >= 26) {
+            ChangedPackages changes = packageManager.getChangedPackages(pkgChangeSequence);
+            if (changes != null) {
+                pkgChangeSequence = changes.getSequenceNumber();
+                iconListAdapter.updateHiddenPositions();
+            }
+        }
         super.onResume();
+    }
+
+    public class PkgChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            iconListAdapter.updateHiddenPositions();
+        }
     }
 
     @Override
@@ -105,19 +125,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    @NonNull
-    private File createFile() throws IOException {
-
-        final File sharedFolder = new File(getFilesDir(), SHARED_FOLDER);
-        sharedFolder.mkdirs();
-
-        final File sharedFile = File.createTempFile("picture", ".png", sharedFolder);
-        sharedFile.createNewFile();
-
-        return sharedFile;
-    }
-
-    public void LoadIconList() {
+    public void loadIconList() {
         iconListView = (RecyclerView) findViewById(R.id.recyclerView);
         iconListView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -132,27 +140,9 @@ public class MainActivity extends AppCompatActivity {
         iconListAdapter = new IconListAdapter(MainActivity.this, iconTargetMap);
         iconListAdapter.setHasStableIds(true);
         iconListView.setAdapter(iconListAdapter);
+        iconListAdapter.updateHiddenPositions();
 
     }
-
-//    public class LoadIconTask extends AsyncTask<String, Void, Integer> {
-//        @Override
-//        protected Integer doInBackground(String... params) {
-//            Integer result = 0;
-//
-//            iconTargetMap = new HashMap<String, String>();
-//            String[] iconPkgList = getResources().getStringArray(R.array.iconoirPackages);
-//            for (String iconPkg : iconPkgList) {
-//                String packagePkg = pref.getString(iconPkg, "");
-//                iconTargetMap.put(iconPkg, packagePkg);
-//            }
-//            iconListAdapter = new IconListAdapter(MainActivity.this, iconTargetMap);
-//            iconListView.setAdapter(iconListAdapter);
-//            addShowAllListener();
-//
-//            return result; //"Failed to set adapters!";
-//        }
-//    }
 
     private void addShowAllListener() {
         Switch showAll = (Switch) findViewById(R.id.switchShowAll);
