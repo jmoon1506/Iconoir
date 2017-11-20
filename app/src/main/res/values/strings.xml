@@ -5,7 +5,7 @@
     <string name="showAllLaunchers">Show All</string>
     <string name="launcherItemIcon">Icon</string>
 
-    <string name="menuOverflow">Overflow</string>
+    <string name="menuAlert">Wallpaper Alert</string>
     <string name="menuAdvanced">Advanced Settings</string>
     <string name="menuAbout">About</string>
 
@@ -118,4 +118,12 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\n
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n
     </string>
+
+    <string name="alertSetWallpaperBefore">Before</string>
+    <string name="alertSetWallpaperAfter">After</string>
+    <string name="alertSetWallpaperDesc">It appears you are using a newer version of Android.
+        We recommend setting your wallpaper to Iconoir Black, which will match your icons.</string>
+
+    <string name="alertSetWallpaperButton">Set Iconoir Black wallpaper</string>
+    <string name="alertSetWallpaperNote">You can easily revert changes in the Advanced Settings panel.</string>
 </resources>

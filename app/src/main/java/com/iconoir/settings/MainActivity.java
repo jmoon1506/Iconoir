@@ -1,6 +1,6 @@
 package com.iconoir.settings;
 
-import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,24 +9,25 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ChangedPackages;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.inputmethod.BaseInputConnection;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.iconoir.settings.SetWallpaperPreference.drawableToBitmap;
+import static com.iconoir.settings.SetWallpaperPreference.imagesAreEqual;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView iconListView;
@@ -39,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
     Integer pkgChangeSequence = 0;
     Menu optionMenu;
 
-    private static final String SHARED_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
-    private static final String SHARED_FOLDER = "shared";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         readSharedPreferences();
 
         loadIconList();
-//        new LoadIconTask().execute();
         addShowAllListener();
         if (Build.VERSION.SDK_INT < 26) {
             broadcastReceiver = new PkgChangeReceiver();
@@ -99,30 +96,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        final MenuItem overflow = menu.findItem(R.id.overflow);
-        overflow.getActionView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onOptionsItemSelected(overflow);
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (!isWallpaperSet()) {
+                menu.findItem(R.id.alertWallpaper).setVisible(true);
             }
-        });
+        }
         optionMenu = menu;
-        return super.onPrepareOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.overflow:
-                Toast.makeText(this,"open overflow",
-                        Toast.LENGTH_SHORT).show();
-                openOptionsMenu();
+            case R.id.alertWallpaper:
+                startActivityForResult(new Intent( this, AlertSetWallpaperActivity.class ),
+                        2);
                 break;
             case R.id.advanced:
                 Intent intent = new Intent( this, AdvancedActivity.class );
@@ -207,18 +196,16 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString(iconPkg, targetPkg);
                 editor.apply();
             }
+        } else if (requestCode == 2) {
+            if(resultCode == RESULT_OK) {
+                optionMenu.findItem(R.id.alertWallpaper).setVisible(false);
+            }
         }
     }
 
-    private void updateAlertIcon() {
-        // if alert count extends into two digits, just show the red circle
-//        if (0 < alertCount && alertCount < 10) {
-//            countTextView.setText(String.valueOf(alertCount));
-//        } else {
-//            countTextView.setText("");
-//        }
-//
-//        redCircle.setVisibility((alertCount > 0) ? VISIBLE : GONE);
+    public boolean isWallpaperSet() {
+        Bitmap currentImg = drawableToBitmap(WallpaperManager.getInstance(this).getDrawable());
+        Bitmap iconoirImg = BitmapFactory.decodeResource(getResources(), R.drawable.wallpaper);
+        return imagesAreEqual(currentImg, iconoirImg);
     }
-
 }

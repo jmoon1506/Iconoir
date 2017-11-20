@@ -28,7 +28,6 @@ import java.util.TreeMap;
 public class TargetActivity extends AppCompatActivity {
     RecyclerView targetListView;
     TargetListAdapter targetListAdapter;
-    ListView listView;
     TargetListAdapter listAdapter;
     PackageManager packageManager;
     SharedPreferences pref;
@@ -44,15 +43,13 @@ public class TargetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         packageManager = getPackageManager();
         pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        pref = getApplicationContext().getSharedPreferences("IconoirSettings", MODE_PRIVATE); // 0 - for private mode
         validSystemPkgs = Arrays.asList(getResources().getStringArray(R.array.validSystemPackages));
         iconoirPkgs = Arrays.asList(getResources().getStringArray(R.array.iconoirPackages));
         iconoirSettingsPkg = getResources().getString(R.string.iconoirSettingsPackage);
         setContentView(R.layout.activity_target);
         setTitle(R.string.actionBarPackages);
-//        setupActionBar();
 
-        targetListView = (RecyclerView) findViewById(R.id.recyclerView);
+        targetListView = findViewById(R.id.recyclerView);
         targetListView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setItemPrefetchEnabled(true);
@@ -92,9 +89,9 @@ public class TargetActivity extends AppCompatActivity {
                 loadPackageList();
             }
         }
-        Boolean newShowSystemPkgs = pref.getBoolean("showSystemPkgs", false);
-        if (newShowSystemPkgs != showAllSystemPkgs) {
-            showAllSystemPkgs = newShowSystemPkgs;
+        Boolean prefShowSystemPkgs = pref.getBoolean("showSystemPkgs", false);
+        if (prefShowSystemPkgs != showAllSystemPkgs) {
+            showAllSystemPkgs = prefShowSystemPkgs;
             loadPackageList();
         }
         super.onResume();
