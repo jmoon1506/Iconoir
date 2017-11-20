@@ -5,6 +5,7 @@
     <string name="showAllLaunchers">Show All</string>
     <string name="launcherItemIcon">Icon</string>
 
+    <string name="menuOverflow">Overflow</string>
     <string name="menuAdvanced">Advanced Settings</string>
     <string name="menuAbout">About</string>
 
@@ -74,8 +75,13 @@
     <!-- Example Interface settings -->
     <string name="prefTitle">Advanced Settings</string>
 
-    <string name="prefTitleSetBackground">Set Iconoir background</string>
-    <string name="prefDescSetBackground">Will reversibly change your current wallpaper</string>
+    <string name="prefTitleSetBackground">Set Iconoir Black wallpaper</string>
+    <string name="prefDescSetBackground">Can be reversed</string>
+
+    <string name="prefTitleRestoreBackground">Restore old wallpaper</string>
+    <string name="prefDescRestoreBackground">Saved until cache cleared</string>
+
+    <string name="errorSetWallpaper">Could not set wallpaper</string>
 
     <string name="prefTitleAllowHiddenPackages">Allow hidden system apps</string>
     <string name="prefDescAllowHiddenPackages">Some may not function correctly</string>

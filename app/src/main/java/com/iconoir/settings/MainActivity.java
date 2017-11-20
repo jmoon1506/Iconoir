@@ -1,5 +1,6 @@
 package com.iconoir.settings;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,10 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.BaseInputConnection;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     Map<String, String> iconTargetMap;
     PkgChangeReceiver broadcastReceiver;
     Integer pkgChangeSequence = 0;
+    Menu optionMenu;
 
     private static final String SHARED_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
     private static final String SHARED_FOLDER = "shared";
@@ -96,8 +103,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem overflow = menu.findItem(R.id.overflow);
+        overflow.getActionView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onOptionsItemSelected(overflow);
+            }
+        });
+        optionMenu = menu;
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.overflow:
+                Toast.makeText(this,"open overflow",
+                        Toast.LENGTH_SHORT).show();
+                openOptionsMenu();
+                break;
             case R.id.advanced:
                 Intent intent = new Intent( this, AdvancedActivity.class );
                 intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT,
@@ -112,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @Override
     public void onBackPressed()
@@ -182,5 +210,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateAlertIcon() {
+        // if alert count extends into two digits, just show the red circle
+//        if (0 < alertCount && alertCount < 10) {
+//            countTextView.setText(String.valueOf(alertCount));
+//        } else {
+//            countTextView.setText("");
+//        }
+//
+//        redCircle.setVisibility((alertCount > 0) ? VISIBLE : GONE);
+    }
 
 }

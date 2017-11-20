@@ -2,49 +2,77 @@ package com.iconoir.settings;
 
 import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.DialogPreference;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.NumberPicker;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class SetWallpaperPreference extends DialogPreference {
+    WallpaperManager wallpaperManager;
+    Boolean restore = false;
 
     public SetWallpaperPreference(Context context, AttributeSet attrs){
         super(context, attrs);
+        wallpaperManager = WallpaperManager.getInstance(getContext());
+        if (isWallpaperSet()) {
+            String destFolder = getContext().getCacheDir().getAbsolutePath();
+            File oldWallpaper = new File(destFolder + "/old_wallpaper.png");
+            if (oldWallpaper.exists()) {
+                enableRestore(true, false);
+            } else {
+                enableRestore(false, false);
+            }
+        } else {
+            enableRestore(false, true);
+        }
+    }
+
+    private void enableRestore(Boolean enableRestore, Boolean enableSet) {
+        if (enableRestore) {
+            setEnabled(true);
+            setTitle(R.string.prefTitleRestoreBackground);
+            setSummary(R.string.prefDescRestoreBackground);
+            setDialogMessage(R.string.prefTitleRestoreBackground);
+            restore = true;
+        } else {
+            setEnabled(enableSet);
+            setTitle(R.string.prefTitleSetBackground);
+            setSummary(R.string.prefDescSetBackground);
+            setDialogMessage(R.string.prefDescSetBackground);
+            restore = false;
+        }
     }
 
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (positiveResult) {
-            WallpaperManager myWallpaperManager
-                    = WallpaperManager.getInstance(getContext());
             try {
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
-                Bitmap oldImg = drawableToBitmap(wallpaperManager.getDrawable());
-                String destFolder = getContext().getCacheDir().getAbsolutePath();
-                FileOutputStream out = new FileOutputStream(destFolder + "/wallpaper.png");
-                oldImg.compress(Bitmap.CompressFormat.PNG, 100, out);
+                Bitmap newImg;
+                if (restore) {
+                    String destFolder = getContext().getCacheDir().getAbsolutePath();
+                    newImg = BitmapFactory.decodeFile(destFolder + "/old_wallpaper.png");
+                    enableRestore(false, true);
+                } else {
+                    Bitmap oldImg = drawableToBitmap(wallpaperManager.getDrawable());
+                    String destFolder = getContext().getCacheDir().getAbsolutePath();
+                    FileOutputStream out = new FileOutputStream(destFolder + "/old_wallpaper.png");
+                    oldImg.compress(Bitmap.CompressFormat.PNG, 100, out);
 
-
-                Bitmap newImg = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.wallpaper);
+                    newImg = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.wallpaper);
+                    enableRestore(true, false);
+                }
                 wallpaperManager.setBitmap(newImg);
             } catch (IOException e) {
-                Toast.makeText(getContext(),
-                        "Could not set background.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),getContext().getString(R.string.errorSetWallpaper),
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -69,5 +97,20 @@ public class SetWallpaperPreference extends DialogPreference {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public boolean isWallpaperSet() {
+        Bitmap currentImg = drawableToBitmap(wallpaperManager.getDrawable());
+        Bitmap iconoirImg = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.wallpaper);
+        return imagesAreEqual(currentImg, iconoirImg);
+    }
+
+    public static boolean imagesAreEqual(Bitmap img1, Bitmap img2) {
+        if (img1.getHeight() != img2.getHeight()) return false;
+        if (img1.getWidth() != img2.getWidth()) return false;
+        for (int y = 0; y < img1.getHeight(); ++y)
+            for (int x = 0; x < img1.getWidth(); ++x)
+                if (img1.getPixel(x, y) != img2.getPixel(x, y)) return false;
+        return true;
     }
 }

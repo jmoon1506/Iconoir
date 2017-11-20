@@ -1,29 +1,30 @@
 package com.iconoir.settings;
 
 import android.annotation.TargetApi;
+import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.DialogPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.Log;
+import android.preference.PreferenceScreen;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
-import android.view.View;
+import android.widget.Toast;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
+
+import static com.iconoir.settings.SetWallpaperPreference.drawableToBitmap;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -223,8 +224,12 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_interface);
+            addPreferencesFromResource(R.xml.pref_advanced);
             setHasOptionsMenu(true);
+
+//            PreferenceScreen screen = getPreferenceScreen();
+//            Preference setWallpaper = findPreference("setBackground");
+//            screen.removePreference(setWallpaper);
         }
 
         @Override
@@ -236,5 +241,10 @@ public class AdvancedActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }
