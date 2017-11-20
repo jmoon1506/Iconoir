@@ -69,8 +69,15 @@ public class TargetActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
+        if (Build.VERSION.SDK_INT < 26) {
+            unregisterReceiver(broadcastReceiver);
+        }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     public class PkgChangeReceiver extends BroadcastReceiver {

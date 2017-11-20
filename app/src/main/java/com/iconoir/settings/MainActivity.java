@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
+        if (Build.VERSION.SDK_INT < 26) {
+            unregisterReceiver(broadcastReceiver);
+        }
         super.onDestroy();
     }
 
@@ -96,13 +98,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        if (Build.VERSION.SDK_INT >= 26) {
-            if (!isWallpaperSet()) {
-                menu.findItem(R.id.alertWallpaper).setVisible(true);
-            }
-        }
         optionMenu = menu;
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            menu.findItem(R.id.alertWallpaper).setVisible(!isWallpaperSet());
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
 

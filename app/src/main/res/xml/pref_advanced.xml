@@ -2,9 +2,9 @@
 
     <com.iconoir.settings.SetWallpaperPreference
         android:key="setBackground"
-        android:summary="@string/prefDescSetBackground"
-        android:title="@string/prefTitleSetBackground"
-        android:dialogMessage="@string/prefDescSetBackground"
+        android:summary=""
+        android:title=""
+        android:dialogMessage=""
         android:positiveButtonText="Confirm"
         android:negativeButtonText="Cancel"/>
 

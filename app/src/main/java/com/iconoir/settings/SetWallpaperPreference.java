@@ -105,12 +105,12 @@ public class SetWallpaperPreference extends DialogPreference {
         return imagesAreEqual(currentImg, iconoirImg);
     }
 
-    public static boolean imagesAreEqual(Bitmap img1, Bitmap img2) {
-        if (img1.getHeight() != img2.getHeight()) return false;
-        if (img1.getWidth() != img2.getWidth()) return false;
-        for (int y = 0; y < img1.getHeight(); ++y)
-            for (int x = 0; x < img1.getWidth(); ++x)
-                if (img1.getPixel(x, y) != img2.getPixel(x, y)) return false;
+    public static boolean imagesAreEqual(Bitmap wallpaper, Bitmap black) {
+//        if (img1.getHeight() != img2.getHeight()) return false;
+//        if (img1.getWidth() != img2.getWidth()) return false;
+        for (int y = 0; y < black.getHeight(); ++y)
+            for (int x = 0; x < black.getWidth(); ++x)
+                if (black.getPixel(x, y) != wallpaper.getPixel(x, y)) return false;
         return true;
     }
 }
