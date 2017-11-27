@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context="com.iconoir.settings.IconInstallActivity">
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/settingsMsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/com_iconoir_a" />
+
     <TextView
         android:id="@+id/settingsMsg"
         android:layout_width="wrap_content"
@@ -13,8 +27,8 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="172dp"
         android:gravity="center"
-        android:text="Install this icon"
-        android:textSize="24sp"
+        android:text="@string/installIcon"
+        android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -24,12 +38,12 @@
 
     <ImageButton
         android:id="@+id/btnGooglePlay"
-        android:layout_width="128dp"
+        android:layout_width="192sp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@null"
         android:scaleType="fitCenter"
         android:src="@drawable/google_play_badge"
         app:layout_constraintBottom_toBottomOf="parent"

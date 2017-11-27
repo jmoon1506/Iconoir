@@ -11,18 +11,25 @@ import android.content.pm.ChangedPackages;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
     PackageManager packageManager;
-    Map<String, String> iconTargetMap;
-    PkgChangeReceiver broadcastReceiver;
-    Integer pkgChangeSequence = 0;
     Menu optionMenu;
 
     @Override
@@ -47,52 +51,21 @@ public class MainActivity extends AppCompatActivity {
         setTitle(R.string.actionBarTitle);
         packageManager = getPackageManager();
         readSharedPreferences();
-
         loadIconList();
         addShowAllListener();
-        if (Build.VERSION.SDK_INT < 26) {
-            broadcastReceiver = new PkgChangeReceiver();
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-            intentFilter.addAction(Intent.ACTION_PACKAGE_INSTALL);
-            intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-            intentFilter.addDataScheme("package");
-            registerReceiver(broadcastReceiver, intentFilter);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (Build.VERSION.SDK_INT < 26) {
-            unregisterReceiver(broadcastReceiver);
-        }
-        super.onDestroy();
     }
 
     @Override
     protected void onResume() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            ChangedPackages changes = packageManager.getChangedPackages(pkgChangeSequence);
-            if (changes != null) {
-                pkgChangeSequence = changes.getSequenceNumber();
-                iconListAdapter.updateHiddenPositions();
-            }
-        }
-
         Boolean hideOtherIcons = pref.getBoolean("showOnlyIconoir", false);
         if (hideOtherIcons) {
             ComponentName componentName = new ComponentName(this, "com.google.android.youtube");
             packageManager.setComponentEnabledSetting(componentName,packageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     packageManager.DONT_KILL_APP);
         }
+        iconListAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
+        iconListAdapter.updateHiddenPositions();
         super.onResume();
-    }
-
-    public class PkgChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            iconListAdapter.updateHiddenPositions();
-        }
     }
 
     @Override
@@ -157,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         pref = getApplicationContext().getSharedPreferences(
                 getString(R.string.sharedPrefLabel), MODE_PRIVATE | MODE_MULTI_PROCESS);
         editor = pref.edit();
-        editor.putBoolean("showAllEnabled", false);
         editor.apply();
     }
 
@@ -167,17 +139,11 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setItemPrefetchEnabled(false);
         iconListView.setLayoutManager(llm);
-        iconTargetMap = new HashMap<String, String>();
-        String[] iconPkgList = getResources().getStringArray(R.array.iconoirPackages);
-        for (String iconPkg : iconPkgList) {
-            String packagePkg = pref.getString(iconPkg, "");
-            iconTargetMap.put(iconPkg, packagePkg);
-        }
-        iconListAdapter = new IconListAdapter(MainActivity.this, iconTargetMap);
+
+        iconListAdapter = new IconListAdapter(MainActivity.this);
         iconListAdapter.setHasStableIds(true);
         iconListView.setAdapter(iconListAdapter);
         iconListAdapter.updateHiddenPositions();
-
     }
 
     private void addShowAllListener() {
@@ -197,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 String targetPkg = data.getStringExtra("targetPkg");
-                String iconPkg = iconListAdapter.updateIconPackageMap(targetPkg);
+                String iconPkg = iconListAdapter.updateTarget(targetPkg);
                 editor.putString(iconPkg, targetPkg);
                 editor.apply();
             }
@@ -212,5 +178,85 @@ public class MainActivity extends AppCompatActivity {
         Bitmap currentImg = drawableToBitmap(WallpaperManager.getInstance(this).getDrawable());
         Bitmap iconoirImg = BitmapFactory.decodeResource(getResources(), R.drawable.wallpaper);
         return imagesAreEqual(currentImg, iconoirImg);
+    }
+
+    String convertStreamToString(java.io.InputStream is) {
+        try {
+            return new java.util.Scanner(is).useDelimiter("\\A").next();
+        } catch (java.util.NoSuchElementException e) {
+            return "";
+        }
+    }
+
+    private boolean isPackageReleased(String iconPkg) {
+        URL url;
+        HttpURLConnection urlConnection = null;
+        try {
+            url = new URL("http://www.android.com/");
+            urlConnection = (HttpURLConnection) url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            Log.e("REQUEST", ">>>>>PRINTING<<<<<");
+            Log.e("REQUEST", in.toString());
+            Log.e("REQUEST", convertStreamToString(in));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            urlConnection.disconnect();
+        }
+//        URL url;
+//        HttpURLConnection urlConnection = null;
+//        try {
+//            url = new URL("https://play.google.com/store/apps/details?id=com.google.android.apps.maps");
+//            urlConnection = (HttpURLConnection) url.openConnection();
+//
+//            Log.d("RESPONSE", Integer.toString(urlConnection.getResponseCode()));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            urlConnection.disconnect();
+//        }
+        return false;
+    }
+
+    private boolean availableOnGooglePlay(final String packageName)
+    {
+        URL url;
+        HttpURLConnection urlConnection = null;
+        try {
+            url = new URL("https://play.google.com/store/apps/details?id=" + packageName);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+            final int responseCode = urlConnection.getResponseCode();
+            Log.d("GOOGLEPLAY", "responseCode for " + packageName + ": " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) // code 200
+            {
+                return true;
+            } else // this will be HttpURLConnection.HTTP_NOT_FOUND or code 404 if the package is not found
+            {
+                return false;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            urlConnection.disconnect();
+        }
+        return false;
+    }
+
+    class checkGooglePlay extends AsyncTask<String, Void, Boolean> {
+
+        private Exception exception;
+
+        protected Boolean doInBackground(String... urls) {
+            try {
+                URL url = new URL(urls[0]);
+
+            } catch (Exception e) {
+                this.exception = e;
+            }
+            return false;
+        }
     }
 }

@@ -9,7 +9,11 @@
     <string name="menuAdvanced">Advanced Settings</string>
     <string name="menuAbout">About</string>
 
-    <string name="notInstalled">Not Installed</string>
+    <string name="installed">Installed</string>
+    <string name="notInstalled">Available</string>
+    <string name="notReleased">Unreleased</string>
+
+    <string name="installIcon">Install this icon</string>
 
     <string name="iconoirSettingsPackage">com.iconoir.settings</string>
     <string name="sharedPrefLabel">IconoirSettings</string>

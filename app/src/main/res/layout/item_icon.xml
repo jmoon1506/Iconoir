@@ -17,6 +17,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:scaleType="centerInside"
+        android:visibility="visible"
         app:srcCompat="@android:drawable/ic_menu_info_details" />
 
     <ImageView
@@ -28,6 +29,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:scaleType="centerInside"
+        android:visibility="visible"
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <ImageView
@@ -39,20 +41,26 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:scaleType="centerInside"
+        android:visibility="visible"
         app:srcCompat="@android:drawable/ic_menu_info_details" />
 
     <TextView
-        android:id="@+id/target_text"
+        android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignTop="@+id/target"
         android:layout_alignBottom="@+id/target"
         android:layout_toEndOf="@+id/target"
         android:layout_toRightOf="@+id/target"
-        android:gravity="center"
+        android:gravity="start|center"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:textAllCaps="false"
+        android:textStyle="normal"
         android:clickable="true"
         android:focusable="true"
         android:background="@drawable/launcher_item_states"
+        android:textColor="@color/textGrey"
         android:text="Icon" />
 
 </RelativeLayout>

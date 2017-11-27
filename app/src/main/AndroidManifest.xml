@@ -4,6 +4,7 @@
     android:sharedUserId="iconoir.userid">
 
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"

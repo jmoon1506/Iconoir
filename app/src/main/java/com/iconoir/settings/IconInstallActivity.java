@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import static com.iconoir.settings.IconListAdapter.getDrawableId;
 
 public class IconInstallActivity extends AppCompatActivity {
 
@@ -16,6 +20,11 @@ public class IconInstallActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_icon_install);
         addGooglePlayListener();
+        String iconPkg = getIntent().getStringExtra("iconPkg");
+
+        ImageView icon = (ImageView) findViewById(R.id.icon);
+        int drawableId = getDrawableId(iconPkg);
+        icon.setImageDrawable(getResources().getDrawable(drawableId));
     }
 
     public void addGooglePlayListener() {
