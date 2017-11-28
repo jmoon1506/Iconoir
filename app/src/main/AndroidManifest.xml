@@ -56,12 +56,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LicensesActivity" />
         </activity>
-        <activity android:name=".AlertSetWallpaperActivity"
+        <activity
+            android:name=".AlertSetWallpaperActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.iconoir.settings.MainActivity" />
         </activity>
+        <activity android:name=".IconUnreleasedActivity"></activity>
     </application>
 
 </manifest>

@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,18 +16,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
+
 public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.CustomViewHolder> {
     List<IconInfo> iconList;
-    Map<String, String> iconTargetMap;
-//    Map<String, Boolean> iconReleaseMap;
     MainActivity context;
     Boolean showAll = false;
     PackageManager packageManager;
@@ -50,6 +51,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
             iconList.add(new IconInfo(iconPkg, targetPkg));
         }
         updateHiddenPositions();
+        checkRelease();
     }
 
     public List<IconInfo> sortIconList(List<IconInfo> inputList) {
@@ -145,11 +147,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                     PackageInfo info = packageManager.getPackageInfo(iconPkg, PackageManager.GET_META_DATA);
                     state = IconState.INSTALLED;
                 } catch (PackageManager.NameNotFoundException e) {
-                    if (false) {
-                        state = IconState.NOT_RELEASED;
-                    } else {
-                        state = IconState.NOT_INSTALLED;
-                    }
+                    if (state == IconState.INSTALLED) state = IconState.NOT_INSTALLED;
                 }
             }
             return state;
@@ -190,8 +188,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 //    }
 
     public void setShowAll(Boolean showAll) {
+        if (this.showAll != showAll) notifyDataSetChanged();
         this.showAll = showAll;
-        notifyDataSetChanged();
     }
 
     public String updateTarget(String targetPkg) {
@@ -294,6 +292,14 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                     holder.text.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            int position=(Integer)v.getTag();
+                            String targetPkg = getItem(position).iconPkg;
+                            Bundle bundle = new Bundle();
+                            bundle.putString("iconPkg", targetPkg);
+
+                            Intent i = new Intent(context, IconUnreleasedActivity.class);
+                            i.putExtras(bundle);
+                            context.startActivity(i);
                         }
                     });
                 } else { // NOT INSTALLED
@@ -361,5 +367,25 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         }
     }
 
+    private void checkRelease() {
+        for (final IconInfo item : iconList) {
+            if (item.state == IconState.NOT_RELEASED || item.state == IconState.NOT_INSTALLED) {
+                AsyncHttpClient client = new AsyncHttpClient();
+                String url = context.getString(R.string.googlePlayPrefix) + item.iconPkg;
+                client.get(url, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        item.state = IconState.NOT_INSTALLED;
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        if (statusCode == 404) item.state = IconState.NOT_RELEASED;
+                    }
+                });
+            }
+        }
+
+    }
 
 }

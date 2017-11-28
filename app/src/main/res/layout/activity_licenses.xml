@@ -17,20 +17,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/license1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/license1"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/license1Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/license1Text"/>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="30dp" />
-            <TextView
                 android:id="@+id/license2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,6 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/license2Text"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
         </LinearLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

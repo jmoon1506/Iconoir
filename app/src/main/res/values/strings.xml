@@ -14,7 +14,9 @@
     <string name="notReleased">Unreleased</string>
 
     <string name="installIcon">Install this icon</string>
+    <string name="unreleasedIcon">Not yet released.\nPlease rate Iconoir Settings to help this icon get approved sooner.</string>
 
+    <string name="googlePlayPrefix">http://play.google.com/store/apps/details?id=</string>
     <string name="iconoirSettingsPackage">com.iconoir.settings</string>
     <string name="sharedPrefLabel">IconoirSettings</string>
 
