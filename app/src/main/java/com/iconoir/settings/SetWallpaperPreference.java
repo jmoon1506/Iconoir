@@ -40,13 +40,13 @@ public class SetWallpaperPreference extends DialogPreference {
             setEnabled(true);
             setTitle(R.string.prefTitleRestoreBackground);
             setSummary(R.string.prefDescRestoreBackground);
-            setDialogMessage(R.string.prefTitleRestoreBackground);
+            setDialogMessage(R.string.prefConfirmRestoreBackground);
             restore = true;
         } else {
             setEnabled(enableSet);
             setTitle(R.string.prefTitleSetBackground);
             setSummary(R.string.prefDescSetBackground);
-            setDialogMessage(R.string.prefDescSetBackground);
+            setDialogMessage(R.string.prefConfirmSetBackground);
             restore = false;
         }
     }

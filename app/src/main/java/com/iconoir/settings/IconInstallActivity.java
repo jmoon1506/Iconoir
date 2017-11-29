@@ -21,7 +21,6 @@ public class IconInstallActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_icon_install);
         addGooglePlayListener();
-        setTitle("");
         setupActionBar();
         String iconPkg = getIntent().getStringExtra("iconPkg");
         ImageView icon = (ImageView) findViewById(R.id.icon);

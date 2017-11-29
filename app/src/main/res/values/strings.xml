@@ -83,10 +83,12 @@
     <string name="prefTitle">Advanced Settings</string>
 
     <string name="prefTitleSetBackground">Set Iconoir Black wallpaper</string>
-    <string name="prefDescSetBackground">Better matches your icons, can be reversed</string>
+    <string name="prefDescSetBackground">Better matches your icons</string>
+    <string name="prefConfirmSetBackground">Set your wallpaper to Iconoir Black. Can be reversed.</string>
 
     <string name="prefTitleRestoreBackground">Restore old wallpaper</string>
     <string name="prefDescRestoreBackground">Saved until cache cleared</string>
+    <string name="prefConfirmRestoreBackground">Return to your previous wallpaper.</string>
 
     <string name="errorSetWallpaper">Could not set wallpaper</string>
 

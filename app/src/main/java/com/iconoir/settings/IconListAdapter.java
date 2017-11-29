@@ -262,7 +262,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
             holder.arrow.setVisibility(View.GONE);
             holder.target.setVisibility(View.GONE);
             holder.text.setGravity(Gravity.CENTER | Gravity.START);
-            holder.text.setTypeface(Typeface.DEFAULT_BOLD);
+//            holder.text.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
             holder.text.setText(item.headerTitle);
             holder.text.setTextColor(Color.WHITE);
             holder.text.setClickable(false);
@@ -270,7 +270,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         } else {
             holder.icon.setVisibility(View.VISIBLE);
             holder.text.setGravity(Gravity.CENTER);
-            holder.text.setTypeface(Typeface.DEFAULT);
+//            holder.text.setTypeface(Typeface.DEFAULT);
             holder.text.setClickable(true);
             holder.text.setFocusable(true);
 
@@ -396,7 +396,6 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
     }
 
     public void checkRelease() {
-        Log.d("resume", "blah");
         for (final IconInfo item : iconList) {
             if (item.state == IconState.NOT_RELEASED || item.state == IconState.NOT_INSTALLED) {
                 AsyncHttpClient client = new AsyncHttpClient();

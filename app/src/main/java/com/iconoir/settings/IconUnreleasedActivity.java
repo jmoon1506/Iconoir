@@ -18,9 +18,8 @@ public class IconUnreleasedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unreleased);
+        setContentView(R.layout.activity_icon_unreleased);
         addGooglePlayListener();
-        setTitle("");
         setupActionBar();
         String iconPkg = getIntent().getStringExtra("iconPkg");
 
