@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ChangedPackages;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,16 +22,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.ObjectOutputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.iconoir.settings.SetWallpaperPreference.drawableToBitmap;
@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor editor;
     PackageManager packageManager;
     Menu optionMenu;
+    Map<String, String> labelMap = null;
+    PkgChangeReceiver broadcastReceiver;
+    Integer pkgChangeSequence = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +57,36 @@ public class MainActivity extends AppCompatActivity {
         readSharedPreferences();
         loadIconList();
         addShowAllListener();
+
+        LoadTargetLabels loadTargetLabels = new LoadTargetLabels(this);
+        List<PackageInfo> list = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+        PackageInfo[] packageInfos = list.toArray(new PackageInfo[list.size()]);
+        loadTargetLabels.execute(packageInfos);
+
+        if (Build.VERSION.SDK_INT < 26) {
+            broadcastReceiver = new PkgChangeReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_INSTALL);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            intentFilter.addDataScheme("package");
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
     }
+
+
 
     @Override
     protected void onResume() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            ChangedPackages changes = packageManager.getChangedPackages(pkgChangeSequence);
+            if (changes != null) {
+                pkgChangeSequence = changes.getSequenceNumber();
+                iconListAdapter.updateIconList();
+//                iconListAdapter.checkRelease();
+            }
+        }
+
         Boolean hideOtherIcons = pref.getBoolean("showOnlyIconoir", false);
         if (hideOtherIcons) {
             ComponentName componentName = new ComponentName(this, "com.google.android.youtube");
@@ -64,46 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     packageManager.DONT_KILL_APP);
         }
         iconListAdapter.setShowAll(pref.getBoolean("showAllEnabled", false));
-        iconListAdapter.updateHiddenPositions();
         super.onResume();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        optionMenu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            menu.findItem(R.id.alertWallpaper).setVisible(!isWallpaperSet());
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.alertWallpaper:
-                startActivityForResult(new Intent( this, AlertSetWallpaperActivity.class ),
-                        2);
-                break;
-            case R.id.advanced:
-                Intent intent = new Intent( this, AdvancedActivity.class );
-                intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                        "com.iconoir.settings.AdvancedActivity$InterfacePreferenceFragment" );
-                intent.putExtra( PreferenceActivity.EXTRA_NO_HEADERS, true );
-                startActivity(intent);
-                break;
-            case R.id.about:
-                startActivity(new Intent(this, AboutActivity.class));
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -133,19 +124,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public void loadIconList() {
-        iconListView = (RecyclerView) findViewById(R.id.recyclerView);
-        iconListView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setItemPrefetchEnabled(false);
-        iconListView.setLayoutManager(llm);
-
-        iconListAdapter = new IconListAdapter(MainActivity.this);
-        iconListAdapter.setHasStableIds(true);
-        iconListView.setAdapter(iconListAdapter);
-        iconListAdapter.updateHiddenPositions();
-    }
-
     private void addShowAllListener() {
         Switch showAll = (Switch) findViewById(R.id.switchShowAll);
         showAll.setChecked(pref.getBoolean("showAllEnabled", false));
@@ -156,6 +134,22 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
             }
         });
+    }
+
+    //================================================================================
+    // Icons and Targets
+    //================================================================================
+
+    public void loadIconList() {
+        iconListView = (RecyclerView) findViewById(R.id.recyclerView);
+        iconListView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setItemPrefetchEnabled(false);
+        iconListView.setLayoutManager(llm);
+
+        iconListAdapter = new IconListAdapter(MainActivity.this);
+        iconListAdapter.setHasStableIds(true);
+        iconListView.setAdapter(iconListAdapter);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -174,89 +168,96 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private static class LoadTargetLabels extends AsyncTask<PackageInfo, Void, Map<String, String>> {
+        private WeakReference<MainActivity> activityRef;
+
+        public LoadTargetLabels(MainActivity activity) {
+            this.activityRef = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Map<String, String> doInBackground(PackageInfo... pkgInfos) {
+            Map<String, String> labelMap = new HashMap<>();
+            if (activityRef != null) {
+                for (PackageInfo pkgInfo : pkgInfos) {
+                    String label = pkgInfo.applicationInfo.loadLabel(activityRef.get().packageManager).toString();
+                    labelMap.put(pkgInfo.packageName, label);
+                }
+            }
+            return labelMap;
+        }
+
+        @Override
+        protected  void onPostExecute(Map<String, String> labelMap) {
+            if (activityRef != null) {
+                activityRef.get().labelMap = labelMap;
+            }
+        }
+    }
+
+    //================================================================================
+    // Package Updates
+    //================================================================================
+
+    @Override
+    protected void onDestroy() {
+        if (Build.VERSION.SDK_INT < 26) {
+            unregisterReceiver(broadcastReceiver);
+        }
+        super.onDestroy();
+    }
+
+    public class PkgChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            iconListAdapter.updateIconList();
+//            iconListAdapter.checkRelease();
+        }
+    }
+
+    //================================================================================
+    // Menu and Wallpaper
+    //================================================================================
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        optionMenu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            menu.findItem(R.id.alertWallpaper).setVisible(!isWallpaperSet());
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     public boolean isWallpaperSet() {
         Bitmap currentImg = drawableToBitmap(WallpaperManager.getInstance(this).getDrawable());
         Bitmap iconoirImg = BitmapFactory.decodeResource(getResources(), R.drawable.wallpaper);
         return imagesAreEqual(currentImg, iconoirImg);
     }
 
-    String convertStreamToString(java.io.InputStream is) {
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (java.util.NoSuchElementException e) {
-            return "";
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.alertWallpaper:
+                startActivityForResult(new Intent( this, AlertSetWallpaperActivity.class ),
+                        2);
+                break;
+            case R.id.advanced:
+                Intent intent = new Intent( this, AdvancedActivity.class );
+                intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                        "com.iconoir.settings.AdvancedActivity$InterfacePreferenceFragment" );
+                intent.putExtra( PreferenceActivity.EXTRA_NO_HEADERS, true );
+                startActivity(intent);
+                break;
+            case R.id.about:
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
         }
-    }
-
-    private boolean isPackageReleased(String iconPkg) {
-        URL url;
-        HttpURLConnection urlConnection = null;
-        try {
-            url = new URL("http://www.android.com/");
-            urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            Log.e("REQUEST", ">>>>>PRINTING<<<<<");
-            Log.e("REQUEST", in.toString());
-            Log.e("REQUEST", convertStreamToString(in));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            urlConnection.disconnect();
-        }
-//        URL url;
-//        HttpURLConnection urlConnection = null;
-//        try {
-//            url = new URL("https://play.google.com/store/apps/details?id=com.google.android.apps.maps");
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//
-//            Log.d("RESPONSE", Integer.toString(urlConnection.getResponseCode()));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            urlConnection.disconnect();
-//        }
-        return false;
-    }
-
-    private boolean availableOnGooglePlay(final String packageName)
-    {
-        URL url;
-        HttpURLConnection urlConnection = null;
-        try {
-            url = new URL("https://play.google.com/store/apps/details?id=" + packageName);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-            final int responseCode = urlConnection.getResponseCode();
-            Log.d("GOOGLEPLAY", "responseCode for " + packageName + ": " + responseCode);
-            if (responseCode == HttpURLConnection.HTTP_OK) // code 200
-            {
-                return true;
-            } else // this will be HttpURLConnection.HTTP_NOT_FOUND or code 404 if the package is not found
-            {
-                return false;
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            urlConnection.disconnect();
-        }
-        return false;
-    }
-
-    class checkGooglePlay extends AsyncTask<String, Void, Boolean> {
-
-        private Exception exception;
-
-        protected Boolean doInBackground(String... urls) {
-            try {
-                URL url = new URL(urls[0]);
-
-            } catch (Exception e) {
-                this.exception = e;
-            }
-            return false;
-        }
+        return super.onOptionsItemSelected(item);
     }
 }

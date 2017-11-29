@@ -14,7 +14,8 @@
     <string name="notReleased">Unreleased</string>
 
     <string name="installIcon">Install this icon</string>
-    <string name="unreleasedIcon">Not yet released.\nPlease rate Iconoir Settings to help this icon get approved sooner.</string>
+    <string name="unreleasedIcon">Not yet released</string>
+    <string name="pleaseRate">Please rate Iconoir Settings to help this icon get approved sooner</string>
 
     <string name="googlePlayPrefix">http://play.google.com/store/apps/details?id=</string>
     <string name="iconoirSettingsPackage">com.iconoir.settings</string>
@@ -82,7 +83,7 @@
     <string name="prefTitle">Advanced Settings</string>
 
     <string name="prefTitleSetBackground">Set Iconoir Black wallpaper</string>
-    <string name="prefDescSetBackground">Can be reversed</string>
+    <string name="prefDescSetBackground">Better matches your icons, can be reversed</string>
 
     <string name="prefTitleRestoreBackground">Restore old wallpaper</string>
     <string name="prefDescRestoreBackground">Saved until cache cleared</string>

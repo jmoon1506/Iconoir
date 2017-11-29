@@ -6,8 +6,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +25,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -35,6 +38,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
     PackageManager packageManager;
     int currentIconPos = -1;
     List<Integer> hiddenPositions;
+    Set<String> unreleasedPkgs = null; // store list of unreleased packages
+    Integer pkgsStillChecking = 0; // helps call updateIconList() when http responses done
 
     public IconListAdapter(MainActivity context) {
         super();
@@ -45,13 +50,23 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         iconList.add(new IconInfo(IconState.INSTALLED));
         iconList.add(new IconInfo(IconState.NOT_INSTALLED));
         iconList.add(new IconInfo(IconState.NOT_RELEASED));
+        Set<String> unreleasedPkgsSaved = context.pref.getStringSet("unreleasedPkgs", null);
         String[] iconPkgList = context.getResources().getStringArray(R.array.iconoirPackages);
         for (String iconPkg : iconPkgList) {
             String targetPkg = context.pref.getString(iconPkg, "");
-            iconList.add(new IconInfo(iconPkg, targetPkg));
+            IconInfo item = new IconInfo(iconPkg, targetPkg);
+            if (unreleasedPkgsSaved != null && unreleasedPkgsSaved.contains(iconPkg)) {
+                item.state = IconState.NOT_RELEASED;
+            }
+            iconList.add(item);
         }
-        updateHiddenPositions();
-        checkRelease();
+        updateIconList();
+        if (unreleasedPkgsSaved == null) {
+            unreleasedPkgs = new HashSet<>();
+            checkRelease();
+        } else {
+            unreleasedPkgs = unreleasedPkgsSaved;
+        }
     }
 
     public List<IconInfo> sortIconList(List<IconInfo> inputList) {
@@ -111,8 +126,10 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 
         public IconInfo(String iconPkg, String targetPkg) {
             this.iconPkg = iconPkg;
-            setTarget(targetPkg);
-            setState();
+            updateTarget(targetPkg);
+            updateState();
+            if (state == IconState.NOT_INSTALLED || state == IconState.NOT_RELEASED)
+                pkgsStillChecking += 1;
         }
 
         public IconInfo(IconState headerType) {
@@ -131,7 +148,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
             }
         }
 
-        public ApplicationInfo setTarget(String targetPkg) {
+        public ApplicationInfo updateTarget(String targetPkg) {
             this.targetPkg = targetPkg;
             try {
                 targetInfo = packageManager.getPackageInfo(targetPkg, PackageManager.GET_META_DATA).applicationInfo;
@@ -141,7 +158,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
             return targetInfo;
         }
 
-        public IconState setState() {
+        public IconState updateState() {
             if (state != IconState.HEADER) {
                 try {
                     PackageInfo info = packageManager.getPackageInfo(iconPkg, PackageManager.GET_META_DATA);
@@ -156,12 +173,14 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 
 
 
-    public void updateHiddenPositions() {
+    public void updateIconList() {
+        for (IconInfo item : iconList) {
+            item.updateState();
+        }
         iconList = sortIconList(iconList);
         hiddenPositions = new ArrayList<>();
         for (int i = 0; i < iconList.size(); i++) {
-            IconState state = iconList.get(i).setState();
-            if (state != IconState.INSTALLED) {
+            if (iconList.get(i).state != IconState.INSTALLED) {
                 hiddenPositions.add(i);
             }
         }
@@ -194,7 +213,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 
     public String updateTarget(String targetPkg) {
         IconInfo item = getItem(currentIconPos);
-        item.setTarget(targetPkg);
+        item.updateTarget(targetPkg);
         currentIconPos = -1;
         notifyDataSetChanged();
         return item.iconPkg;
@@ -280,7 +299,16 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                     @Override
                     public void onClick(View v) {
                         currentIconPos = (Integer) v.getTag();
-                        Intent i = new Intent(context, TargetActivity.class);
+
+                        Bundle bundle = new Bundle();
+                        Boolean labelsLoaded = context.labelMap != null;
+                        bundle.putBoolean("labelsLoaded", labelsLoaded);
+                        if (labelsLoaded) {
+                            for (String key : context.labelMap.keySet()) {
+                                bundle.putString(key, context.labelMap.get(key));
+                            }
+                        }
+                        Intent i = new Intent(context, TargetActivity.class).putExtras(bundle);
                         context.startActivityForResult(i, 1);
                     }
                 });
@@ -367,7 +395,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         }
     }
 
-    private void checkRelease() {
+    public void checkRelease() {
+        Log.d("resume", "blah");
         for (final IconInfo item : iconList) {
             if (item.state == IconState.NOT_RELEASED || item.state == IconState.NOT_INSTALLED) {
                 AsyncHttpClient client = new AsyncHttpClient();
@@ -375,12 +404,29 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                 client.get(url, new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        item.state = IconState.NOT_INSTALLED;
+                        if (item.state != IconState.NOT_INSTALLED) {
+                            item.state = IconState.NOT_INSTALLED;
+                            onComplete();
+                        }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        if (statusCode == 404) item.state = IconState.NOT_RELEASED;
+                        if (statusCode == 404) {
+                            if (item.state != IconState.NOT_RELEASED) {
+                                item.state = IconState.NOT_RELEASED;
+                                unreleasedPkgs.add(item.iconPkg);
+                                onComplete();
+                            }
+                        }
+                    }
+
+                    private void onComplete() {
+                        pkgsStillChecking -= 1;
+                        if (pkgsStillChecking == 0) {
+                            updateIconList();
+                            context.editor.putStringSet("unreleasedPkgs", unreleasedPkgs);
+                        }
                     }
                 });
             }

@@ -25,46 +25,24 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
     TargetActivity context;
     PackageManager packageManager;
     Boolean showAll = false;
-    List<Integer> hiddenPositions;
+//    List<Integer> hiddenPositions;
 
-    public TargetListAdapter(TargetActivity context, Boolean showAll) {
+    public TargetListAdapter(TargetActivity context, Map<String, PackageInfo> labelInfoMap) {
         super();
         this.packageManager = context.getPackageManager();
         this.context = context;
-        this.showAll = showAll;
-        List<PackageInfo> packageList = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
         targetList = new ArrayList<>();
-
-        List<String> iconoirPkgs = Arrays.asList(context.getResources().getStringArray(R.array.iconoirPackages));
-        String iconoirSettingsPkg = context.getResources().getString(R.string.iconoirSettingsPackage);
-        for(PackageInfo pkgInfo : packageList) {
-            if (isSystemPackage(pkgInfo) ||
-                    (!iconoirPkgs.contains(pkgInfo.packageName) && !iconoirSettingsPkg.equals(pkgInfo.packageName))) {
-                targetList.add(new TargetInfo(pkgInfo));
-            }
+        for (String label : labelInfoMap.keySet()) {
+            targetList.add(new TargetInfo(label, labelInfoMap.get(label)));
         }
         Collections.sort(targetList, new TargetInfoComparator());
-
-        List<String> validSystemPkgs = Arrays.asList(context.getResources().getStringArray(R.array.validSystemPackages));
-        hiddenPositions = new ArrayList<>();
-        for(int i = 0; i < targetList.size(); i++) {
-            PackageInfo pkgInfo = targetList.get(i).pkgInfo;
-            if(isSystemPackage(pkgInfo) && !validSystemPkgs.contains(pkgInfo.packageName)) {
-                hiddenPositions.add(i);
-            }
-        }
     }
 
     class TargetInfo {
         PackageInfo pkgInfo;
         String pkgLabel;
 
-        public TargetInfo(PackageInfo pkgInfo) {
-            this.pkgInfo = pkgInfo;
-            this.pkgLabel = getPkgLabel(pkgInfo);
-        }
-
-        public TargetInfo(PackageInfo pkgInfo, String pkgLabel) {
+        public TargetInfo(String pkgLabel, PackageInfo pkgInfo) {
             this.pkgInfo = pkgInfo;
             this.pkgLabel = pkgLabel;
         }
@@ -84,11 +62,7 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
 
     @Override
     public int getItemCount() {
-        if (showAll) {
-            return targetList.size();
-        } else {
-            return targetList.size() - hiddenPositions.size();
-        }
+        return targetList.size();
     }
 
     public TargetInfo getItem(int position) {
@@ -118,7 +92,7 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
             this.text.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     int position=(Integer)v.getTag();
-                    String targetPkg = getItem(position).pkgLabel;
+                    String targetPkg = getItem(position).pkgInfo.packageName;
                     context.onBackPressed(targetPkg);
                 }
             });
@@ -133,36 +107,9 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        if (!showAll) {
-            for (int hiddenIndex : hiddenPositions) {
-                if (hiddenIndex <= position) {
-                    position = position + 1;
-                }
-            }
-        }
         final TargetInfo item = getItem(position);
         holder.text.setTag(position);
         holder.text.setText(item.pkgLabel);
         holder.icon.setImageDrawable(packageManager.getApplicationIcon(item.pkgInfo.applicationInfo));
-    }
-
-    private String getPkgLabel(PackageInfo pkgInfo) {
-        ApplicationInfo appInfo = pkgInfo.applicationInfo;
-        try {
-//            final Resources res = packageManager.getResourcesForApplication(appInfo);
-//            res.updateConfiguration(context.config, context.displayMetrics);
-//            return res.getString(appInfo.labelRes);
-            return (String) packageManager.getApplicationLabel(appInfo);
-        } catch (Exception e1) {
-            try {
-                return String.valueOf(packageManager.getApplicationLabel(appInfo));
-            } catch (Exception e2) {
-                return pkgInfo.packageName;
-            }
-        }
-    }
-
-    public boolean isSystemPackage(PackageInfo appInfo) {
-        return (appInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 }

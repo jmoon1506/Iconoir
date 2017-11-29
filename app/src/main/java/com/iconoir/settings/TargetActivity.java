@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -67,6 +68,9 @@ public class TargetActivity extends AppCompatActivity {
             intentFilter.addDataScheme("package");
             registerReceiver(broadcastReceiver, intentFilter);
         }
+
+
+
         loadPackageList();
     }
 
@@ -114,8 +118,31 @@ public class TargetActivity extends AppCompatActivity {
     }
 
     private void loadPackageList() {
-        targetListAdapter = new TargetListAdapter(this, pref.getBoolean("showSystemPkgs", false));
+        Bundle bundle = getIntent().getExtras();
+        List<PackageInfo> pkgInfos = packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+        Map<String, PackageInfo> labelInfoMap = new HashMap<>();
+        List<String> validSystemPkgs = Arrays.asList(getResources().getStringArray(R.array.validSystemPackages));
+        List<String> iconoirPkgs = Arrays.asList(getResources().getStringArray(R.array.iconoirPackages));
+        String iconoirSettingsPkg = getResources().getString(R.string.iconoirSettingsPackage);
+        Boolean showSystemPkgs = pref.getBoolean("showSystemPkgs", false);
+        Boolean labelsLoaded = bundle.getBoolean("labelsLoaded", false);
+        for (PackageInfo pkgInfo : pkgInfos) {
+            if ((isSystemPackage(pkgInfo) && (showSystemPkgs || validSystemPkgs.contains(pkgInfo.packageName)))
+                    || (!isSystemPackage(pkgInfo)
+                    && !(iconoirPkgs.contains(pkgInfo.packageName) || iconoirSettingsPkg.equals(pkgInfo.packageName)))) {
+                if (labelsLoaded) {
+                    labelInfoMap.put(bundle.getString(pkgInfo.packageName), pkgInfo);
+                } else {
+                    labelInfoMap.put(pkgInfo.applicationInfo.loadLabel(packageManager).toString(), pkgInfo);
+                }
+            }
+        }
+        targetListAdapter = new TargetListAdapter(this, labelInfoMap);
         targetListAdapter.setHasStableIds(true);
         targetListView.setAdapter(targetListAdapter);
+    }
+
+    public boolean isSystemPackage(PackageInfo appInfo) {
+        return (appInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 }

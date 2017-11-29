@@ -1,5 +1,6 @@
 package com.iconoir.settings;
 
+import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +20,8 @@ public class IconUnreleasedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unreleased);
         addGooglePlayListener();
+        setTitle("");
+        setupActionBar();
         String iconPkg = getIntent().getStringExtra("iconPkg");
 
         ImageView icon = (ImageView) findViewById(R.id.icon);
@@ -41,5 +44,13 @@ public class IconUnreleasedActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
     }
 }
