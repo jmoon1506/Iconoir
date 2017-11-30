@@ -4,10 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -21,8 +19,14 @@ public class CouldNotOpenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_could_not_open);
         String targetPkg = getIntent().getExtras().getString("targetPkg", "");
-        TextView msg = (TextView) findViewById(R.id.couldNotOpenMsg);
-        msg.setText(getString(R.string.couldNotOpenMessage) + getPackageLabel(targetPkg));
+        TextView msg = (TextView) findViewById(R.id.couldNotOpen);
+        String msgText;
+        if (targetPkg.isEmpty()) {
+            msgText = getString(R.string.couldNotOpen);
+        } else {
+            msgText = getString(R.string.couldNotOpen) + getPackageLabel(targetPkg);
+        }
+        msg.setText(msgText);
         addSettingsListener();
         hasRun = false;
     }
