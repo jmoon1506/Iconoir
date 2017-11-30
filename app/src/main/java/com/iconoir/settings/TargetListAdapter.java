@@ -35,6 +35,7 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
         for (String label : labelInfoMap.keySet()) {
             targetList.add(new TargetInfo(label, labelInfoMap.get(label)));
         }
+        targetList.add(new TargetInfo("", null));
         Collections.sort(targetList, new TargetInfoComparator());
     }
 
@@ -51,6 +52,8 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
     public class TargetInfoComparator implements Comparator<TargetInfo> {
         @Override
         public int compare(TargetInfo info1, TargetInfo info2) {
+            if (info1.pkgLabel.isEmpty()) return 1; // empty label should go at end of list
+            if (info2.pkgLabel.isEmpty()) return -1;
             return info1.pkgLabel.compareTo(info2.pkgLabel);
         }
     };
@@ -92,7 +95,8 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
             this.text.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     int position=(Integer)v.getTag();
-                    String targetPkg = getItem(position).pkgInfo.packageName;
+                    PackageInfo pkgInfo = getItem(position).pkgInfo;
+                    String targetPkg = pkgInfo == null ? "" : pkgInfo.packageName;
                     context.onBackPressed(targetPkg);
                 }
             });
@@ -110,6 +114,10 @@ public class TargetListAdapter extends RecyclerView.Adapter<TargetListAdapter.Cu
         final TargetInfo item = getItem(position);
         holder.text.setTag(position);
         holder.text.setText(item.pkgLabel);
-        holder.icon.setImageDrawable(packageManager.getApplicationIcon(item.pkgInfo.applicationInfo));
+        if (item.pkgInfo != null) {
+            holder.icon.setImageDrawable(packageManager.getApplicationIcon(item.pkgInfo.applicationInfo));
+        } else {
+            holder.icon.setImageDrawable(null);
+        }
     }
 }

@@ -20,6 +20,7 @@ public class IconUnreleasedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_icon_unreleased);
         addGooglePlayListener();
+        setTitle("   ");
         setupActionBar();
         String iconPkg = getIntent().getStringExtra("iconPkg");
 

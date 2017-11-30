@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     PkgChangeReceiver broadcastReceiver;
     Integer pkgChangeSequence = 0;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             if (changes != null) {
                 pkgChangeSequence = changes.getSequenceNumber();
                 iconListAdapter.updateIconList();
-//                iconListAdapter.checkRelease();
+                iconListAdapter.checkRelease();
             }
         }
 
@@ -211,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             iconListAdapter.updateIconList();
-//            iconListAdapter.checkRelease();
+            iconListAdapter.checkRelease();
         }
     }
 

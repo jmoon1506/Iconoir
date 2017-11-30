@@ -68,9 +68,6 @@ public class TargetActivity extends AppCompatActivity {
             intentFilter.addDataScheme("package");
             registerReceiver(broadcastReceiver, intentFilter);
         }
-
-
-
         loadPackageList();
     }
 
@@ -142,7 +139,7 @@ public class TargetActivity extends AppCompatActivity {
         targetListView.setAdapter(targetListAdapter);
     }
 
-    public boolean isSystemPackage(PackageInfo appInfo) {
-        return (appInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+    public boolean isSystemPackage(PackageInfo pkgInfo) {
+        return (pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
     }
 }

@@ -12,8 +12,11 @@
     <string name="installed">Installed</string>
     <string name="notInstalled">Available</string>
     <string name="notReleased">Unreleased</string>
+    <string name="suggested">Suggested</string>
+    <string name="setShortcut">Set Shortcut</string>
 
     <string name="installIcon">Install this icon</string>
+    <string name="suggestedShortcuts">Suggested shortcut for:</string>
     <string name="unreleasedIcon">Not yet released</string>
     <string name="pleaseRate">Please rate Iconoir Settings to help this icon get approved sooner</string>
 
@@ -47,6 +50,35 @@
         <item>com.iconoir.w</item>
         <item>com.iconoir.x</item>
         <item>com.iconoir.y</item>
+        <item>com.iconoir.z</item>
+    </string-array>
+
+    <string-array name="suggestionRanking">
+        <item>com.iconoir.g</item>
+        <item>com.iconoir.c</item>
+        <item>com.iconoir.s</item>
+        <item>com.iconoir.m</item>
+        <item>com.iconoir.p</item>
+        <item>com.iconoir.t</item>
+        <item>com.iconoir.h</item>
+        <item>com.iconoir.e</item>
+        <item>com.iconoir.r</item>
+        <item>com.iconoir.a</item>
+        <item>com.iconoir.o</item>
+        <item>com.iconoir.n</item>
+        <item>com.iconoir.d</item>
+        <item>com.iconoir.l</item>
+        <item>com.iconoir.w</item>
+        <item>com.iconoir.f</item>
+        <item>com.iconoir.b</item>
+        <item>com.iconoir.i</item>
+        <item>com.iconoir.y</item>
+        <item>com.iconoir.u</item>
+        <item>com.iconoir.j</item>
+        <item>com.iconoir.k</item>
+        <item>com.iconoir.v</item>
+        <item>com.iconoir.q</item>
+        <item>com.iconoir.x</item>
         <item>com.iconoir.z</item>
     </string-array>
 
@@ -92,7 +124,7 @@
 
     <string name="errorSetWallpaper">Could not set wallpaper</string>
 
-    <string name="prefTitleAllowHiddenPackages">Allow hidden system apps</string>
+    <string name="prefTitleAllowHiddenPackages">Show hidden system apps</string>
     <string name="prefDescAllowHiddenPackages">Some may not function correctly</string>
 
     <string name="aboutText">Iconoir (1.01)</string>

@@ -59,8 +59,24 @@
         android:textStyle="normal"
         android:clickable="true"
         android:focusable="true"
-        android:background="@drawable/launcher_item_states"
-        android:textColor="@color/textGrey"
+        android:background="@drawable/item_states_solid"
+        android:textColor="@color/white"
         android:text="Icon" />
+
+    <ImageView
+        android:id="@+id/minimize"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        android:rotation="0"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/ic_minimize" />
 
 </RelativeLayout>

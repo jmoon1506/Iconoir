@@ -25,7 +25,7 @@
         android:id="@+id/msg1"
         android:layout_width="256dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"
         android:text="@string/unreleasedIcon"
         android:textSize="24sp"
@@ -37,37 +37,26 @@
         android:id="@+id/msg2"
         android:layout_width="300dp"
         android:layout_height="64dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"
         android:text="@string/pleaseRate"
         android:textSize="18sp"
         android:textStyle="italic"
-        app:layout_constraintBottom_toTopOf="@+id/btnGooglePlay"
+        app:layout_constraintBottom_toTopOf="@+id/stars"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
-
-    <ImageButton
-        android:id="@+id/btnGooglePlay"
-        android:layout_width="192sp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
-        android:adjustViewBounds="true"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:src="@drawable/google_play_badge"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/stars"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/btnGooglePlay"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGooglePlay">
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/star1"
@@ -104,5 +93,21 @@
             android:layout_weight="0.2"
             app:srcCompat="@drawable/ic_star_rate" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnGooglePlay"
+        android:layout_width="192sp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/google_play_badge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 
 </android.support.constraint.ConstraintLayout>

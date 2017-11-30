@@ -10,47 +10,134 @@
         android:id="@+id/icon"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/settingsMsg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.75"
         app:srcCompat="@drawable/com_iconoir_a" />
 
     <TextView
         android:id="@+id/settingsMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center"
         android:text="@string/installIcon"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/suggestions"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.15" />
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/suggestions"
+        android:layout_width="192sp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/btnGooglePlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/suggestText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="@string/suggestedShortcuts" />
+
+        <LinearLayout
+            android:id="@+id/suggestion1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/suggestIcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.1"
+                android:foregroundGravity="center"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+            <TextView
+                android:id="@+id/suggestLabel1"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_weight="0.9"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/suggestion2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/suggestIcon2"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.1"
+                android:foregroundGravity="center"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+            <TextView
+                android:id="@+id/suggestLabel2"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_weight="0.9"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/suggestion3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/suggestIcon3"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.1"
+                android:foregroundGravity="center"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
+
+            <TextView
+                android:id="@+id/suggestLabel3"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_weight="0.9"
+                android:text="" />
+        </LinearLayout>
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/btnGooglePlay"
         android:layout_width="192sp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="80dp"
         android:adjustViewBounds="true"
         android:background="@null"
         android:scaleType="fitCenter"
         android:src="@drawable/google_play_badge"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settingsMsg"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
