@@ -79,7 +79,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         updateIconList();
         if (unreleasedPkgsSaved == null) {
             unreleasedPkgs = new HashSet<>();
-//            checkRelease();
+            checkRelease();
         } else {
             unreleasedPkgs = unreleasedPkgsSaved;
         }
@@ -369,7 +369,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
                 } else { // NOT INSTALLED
                     if (item.isSuggested) {
                         holder.text.setText(context.getString(R.string.suggested));
-                        holder.listItem.setBackgroundColor(context.getResources().getColor(R.color.blueBlack));
+                        holder.listItem.setBackgroundColor(context.getResources().getColor(R.color.greenBlack));
                         holder.text.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.item_states_transparent));
                         holder.text.setTextColor(Color.GRAY);
                         holder.text.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);

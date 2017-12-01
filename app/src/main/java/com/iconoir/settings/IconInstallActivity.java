@@ -25,6 +25,7 @@ import static com.iconoir.settings.IconListAdapter.getDrawableId;
 
 public class IconInstallActivity extends AppCompatActivity {
     PackageManager packageManager;
+    String iconPkg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +35,7 @@ public class IconInstallActivity extends AppCompatActivity {
         addGooglePlayListener();
         setTitle("   ");
         setupActionBar();
-        String iconPkg = getIntent().getStringExtra("iconPkg");
+        iconPkg = getIntent().getStringExtra("iconPkg");
         ImageView icon = (ImageView) findViewById(R.id.icon);
         int drawableId = getDrawableId(iconPkg);
         icon.setImageDrawable(getResources().getDrawable(drawableId));
@@ -47,7 +48,8 @@ public class IconInstallActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.apps.maps"));
+                    intent.setData(Uri.parse(getString(R.string.googlePlayPrefix) + iconPkg));
+//                    intent.setData(Uri.parse("http://play.google.com/store/apps/details?id=com.google.android.apps.maps"));
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IconInstallActivity.this,
