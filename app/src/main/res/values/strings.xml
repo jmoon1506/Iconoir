@@ -163,7 +163,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <string name="alertSetWallpaperBefore">Before</string>
     <string name="alertSetWallpaperAfter">After</string>
     <string name="alertSetWallpaperDesc">It appears you are using a newer version of Android.
-        We recommend setting your wallpaper to Iconoir Black, which will match your icons.</string>
+        We recommend setting your wallpaper to Iconoir Black, which will better match your icons.</string>
 
     <string name="alertSetWallpaperButton">Set Iconoir Black wallpaper</string>
     <string name="alertSetWallpaperNote">You can easily revert changes in the Advanced Settings panel.</string>

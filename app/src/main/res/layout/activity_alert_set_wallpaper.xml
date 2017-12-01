@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
     android:orientation="vertical"
     tools:context="com.iconoir.settings.AlertSetWallpaperActivity">
 
@@ -22,9 +24,9 @@
             android:textStyle="bold"
             android:gravity="center"
             android:text="@string/alertSetWallpaperBefore" />
-        <Space
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
+        <!--<Space-->
+            <!--android:layout_width="32dp"-->
+            <!--android:layout_height="32dp" />-->
         <TextView
             android:id="@+id/textAfter"
             android:layout_width="wrap_content"
@@ -47,19 +49,19 @@
             android:layout_weight="1"
             android:padding="12dp"
             app:srcCompat="@drawable/alert_set_wallpaper_before" />
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center"
-            app:srcCompat="@android:drawable/ic_media_play" />
+        <!--<ImageView-->
+            <!--android:id="@+id/arrow"-->
+            <!--android:layout_width="32dp"-->
+            <!--android:layout_height="32dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--app:srcCompat="@android:drawable/ic_media_play" />-->
         <ImageView
             android:id="@+id/imageAfter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="12dp"
-            app:srcCompat="@drawable/alert_set_wallpaper_before" />
+            app:srcCompat="@drawable/alert_set_wallpaper_after" />
     </LinearLayout>
 
     <android.support.constraint.ConstraintLayout

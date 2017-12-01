@@ -79,9 +79,10 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         updateIconList();
         if (unreleasedPkgsSaved == null) {
             unreleasedPkgs = new HashSet<>();
-            checkRelease();
+//            checkRelease();
         } else {
-            unreleasedPkgs = unreleasedPkgsSaved;
+            unreleasedPkgs = new HashSet<>();
+//            unreleasedPkgs = unreleasedPkgsSaved;
         }
     }
 
