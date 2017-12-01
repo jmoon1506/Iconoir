@@ -19,14 +19,18 @@ public class CouldNotOpenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_could_not_open);
         String targetPkg = getIntent().getExtras().getString("targetPkg", "");
-        TextView msg = (TextView) findViewById(R.id.couldNotOpen);
-        String msgText;
+        TextView header = (TextView) findViewById(R.id.couldNotOpen);
+        TextView message = (TextView) findViewById(R.id.couldNotOpenMsg);
+        String headerText, messageText;
         if (targetPkg.isEmpty()) {
-            msgText = getString(R.string.couldNotOpen);
+            headerText = getString(R.string.noTargetSet);
+            messageText = getString(R.string.noTargetSetMsg);
         } else {
-            msgText = getString(R.string.couldNotOpen) + getPackageLabel(targetPkg);
+            headerText = getString(R.string.couldNotOpen) + getPackageLabel(targetPkg);
+            messageText = getString(R.string.couldNotOpenMsg);
         }
-        msg.setText(msgText);
+        header.setText(headerText);
+        message.setText(messageText);
         addSettingsListener();
         hasRun = false;
     }

@@ -13,8 +13,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.content.pm.PackageManager;
 
-import java.util.List;
-
 public class MainActivity extends Activity {
     String packageName;
     String targetPkg;

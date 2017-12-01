@@ -11,14 +11,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity">
+            android:name="com.iconoir.b.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CouldNotOpenActivity"></activity>
+        <activity android:name="com.iconoir.b.CouldNotOpenActivity"></activity>
     </application>
 
 </manifest>
