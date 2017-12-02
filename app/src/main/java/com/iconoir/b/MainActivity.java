@@ -5,50 +5,62 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.pm.PackageManager;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     String packageName;
     String targetPkg;
-    PackageManager pm;
+    PackageManager packageManager;
     SharedPreferences pref;
     SharedPreferences.OnSharedPreferenceChangeListener listener;
+    TextView header;
+    TextView message;
+    Boolean initialResume = true;
 
     protected void onCreate(Bundle savedInstanceState) {
 //        overridePendingTransition(0, 0);
-        super.onCreate(savedInstanceState);
         packageName = getApplicationContext().getPackageName();
-        pm = getPackageManager();
-//        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-//                targetPkg = pref.getString(packageName, "");
-//                Log.d("PKG", "CHANGE");
-//                Log.d("PKG", targetPkg);
-//            }
-//        };
+        packageManager = getPackageManager();
 
         tryLaunch();
-        setContentView(R.layout.activity_main);
-        addGooglePlayListener();
-
+        super.onCreate(savedInstanceState);
     }
+
+
 
     @Override
     protected void onResume() {
+        if (initialResume) {
+            initialResume = false;
+        } else {
+            tryLaunch();
+        }
         super.onResume();
-        tryLaunch();
     }
 
     private void tryLaunch() {
         if (settingsExists()) {
             readSharedPreferences();
             tryLaunchTarget();
+        } else {
+            setContentView(R.layout.activity_main);
+            header = findViewById(R.id.header);
+            message = findViewById(R.id.message);
+            findViewById(R.id.btnGooglePlay).setVisibility(View.VISIBLE);
+            findViewById(R.id.btnSettings).setVisibility(View.GONE);
+            findViewById(R.id.btnSettingsLabel).setVisibility(View.GONE);
+            header.setText(getString(R.string.settingsNotInstalled));
+            message.setText(getString(R.string.settingsNotInstalledMsg));
+            addGooglePlayListener();
         }
     }
 
@@ -71,12 +83,11 @@ public class MainActivity extends Activity {
                 Activity.MODE_PRIVATE | MODE_MULTI_PROCESS);
 //        pref.registerOnSharedPreferenceChangeListener(listener);
         targetPkg = pref.getString(packageName, "");
-//        Log.d("PKG", targetPkg);
     }
 
     private void tryLaunchTarget() {
         try {
-            Intent intent = pm.getLaunchIntentForPackage(targetPkg);
+            Intent intent = packageManager.getLaunchIntentForPackage(targetPkg);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityForResult(intent, 1);
             finish();
@@ -84,29 +95,54 @@ public class MainActivity extends Activity {
             overridePendingTransition(android.R.anim.fade_in, 0);
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
-        } catch (Exception e) {
+        } catch (Exception e1) {
             if (targetPkg.equals(getString(R.string.androidPhonePackage))) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                finish();
-                startActivityForResult(intent, 1);
-                overridePendingTransition(android.R.anim.fade_in, 0);
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    finish();
+                    startActivityForResult(intent, 1);
+                    overridePendingTransition(android.R.anim.fade_in, 0);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(1);
+                } catch (Exception e2) {
+                    setLayoutCouldNotOpen();
+                }
             } else {
-                Intent intent = new Intent(this, CouldNotOpenActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("targetPkg", targetPkg);
-                overridePendingTransition(0, 0);
-                startActivity(intent);
-//            Toast.makeText(MainActivity.this,"Could not open " + targetPkg, Toast.LENGTH_SHORT).show();
+                setLayoutCouldNotOpen();
             }
+        }
+    }
+
+    private void setLayoutCouldNotOpen() {
+        setContentView(R.layout.activity_main);
+        header = findViewById(R.id.header);
+        message = findViewById(R.id.message);
+        findViewById(R.id.btnGooglePlay).setVisibility(View.GONE);
+        findViewById(R.id.btnSettings).setVisibility(View.VISIBLE);
+        findViewById(R.id.btnSettingsLabel).setVisibility(View.VISIBLE);
+        if (targetPkg.isEmpty()) {
+            header.setText(getString(R.string.noTargetSet));
+            message.setText(getString(R.string.noTargetSetMsg));
+        } else {
+            header.setText(getString(R.string.couldNotOpen, getPackageLabel(targetPkg)));
+            message.setText(getString(R.string.couldNotOpenMsg));
+        }
+        addSettingsListener();
+    }
+
+    private String getPackageLabel(String pkgName) {
+        try {
+            ApplicationInfo app = getPackageManager().getApplicationInfo(pkgName, 0);
+            return (String) getPackageManager().getApplicationLabel(app);
+        } catch (PackageManager.NameNotFoundException e) {
+            return pkgName;
         }
     }
 
     private boolean settingsExists(){
         try {
-            PackageInfo info=pm.getPackageInfo(getString(R.string.iconoirSettingsPackage),
+            PackageInfo info= packageManager.getPackageInfo(getString(R.string.iconoirSettingsPackage),
                     PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             return false;
@@ -132,5 +168,23 @@ public class MainActivity extends Activity {
         });
     }
 
+    public void addSettingsListener() {
+        ImageButton btnSettings = (ImageButton) findViewById(R.id.btnSettings);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                    Intent intent = getPackageManager().getLaunchIntentForPackage(
+                            getString(R.string.iconoirSettingsPackage));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("callFromIcon", getApplicationContext().getPackageName());
+                    startActivity(intent);
+                } catch (ActivityNotFoundException e) {
 
+                    Toast.makeText(MainActivity.this,
+                            "Could not open Iconoir Settings", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+        });
+    }
 }

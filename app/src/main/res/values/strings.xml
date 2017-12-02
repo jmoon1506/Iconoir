@@ -5,10 +5,10 @@
     <string name="androidPhonePackage">com.android.phone</string>
     <string name="settingsGooglePlay">http://play.google.com/store/apps/details?id=com.iconoir.settings</string>
 
-    <string name="installSettings">Please install Iconoir Settings</string>
-    <string name="installSettingsMsg">This will allow you to set shortcuts for these icons</string>
+    <string name="settingsNotInstalled">Please install Iconoir Settings</string>
+    <string name="settingsNotInstalledMsg">This will allow you to set shortcuts for these icons</string>
 
-    <string name="couldNotOpen">Could not open</string>
+    <string name="couldNotOpen">Could not open %s</string>
     <string name="couldNotOpenMsg">Please choose another application</string>
 
     <string name="noTargetSet">No shortcut set</string>
