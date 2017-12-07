@@ -127,14 +127,17 @@
     <string name="prefTitleAllowHiddenPackages">Show hidden system apps</string>
     <string name="prefDescAllowHiddenPackages">Some may not function correctly</string>
 
-    <string name="aboutText">Iconoir (1.01)</string>
-    <string name="aboutWebsite">https://www.iconoir.com</string>
-    <string name="aboutEmail">iconoirdev@gmail.com</string>
+    <string name="aboutText"><b>Iconoir</b>\n(noun\  |\  ˈaɪ koʊ nwar)\nAn elegant interface for all devices.\n\n<i>Version 1.0</i></string>
+
+    <string name="aboutWebsiteValue">https://iconoir.com</string>
+    <string name="aboutEmailValue">iconoirdev@gmail.com</string>
     <string name="aboutTwitterValue">iconoirdev</string>
     <string name="aboutInstagramValue">iconoirdev</string>
     <string name="aboutFacebookValue">iconoirdev</string>
     <string name="aboutPlayStoreValue">com.iconoir.settings</string>
 
+    <string name="aboutWebsite">www.iconoir.com</string>
+    <string name="aboutEmail">Email</string>
     <string name="aboutTwitter">Twitter</string>
     <string name="aboutInstagram">Instagram</string>
     <string name="aboutFacebook">Facebook</string>

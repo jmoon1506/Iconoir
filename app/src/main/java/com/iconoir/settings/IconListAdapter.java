@@ -79,7 +79,7 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         updateIconList();
         if (unreleasedPkgsSaved == null) {
             unreleasedPkgs = new HashSet<>();
-//            checkRelease();
+            checkRelease();
         } else {
             unreleasedPkgs = new HashSet<>();
 //            unreleasedPkgs = unreleasedPkgsSaved;
@@ -151,8 +151,10 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
         public int compare(IconInfo info1, IconInfo info2) {
             if (info1.state == IconState.HEADER) return -1; // header is always at top (lowest index)
             if (info2.state == IconState.HEADER) return 1;
-            if (info1.isSuggested) return -1; // suggestion is second to top
-            if (info2.isSuggested) return 1;
+            if (info1.state == IconState.NOT_INSTALLED || info2.state == IconState.NOT_INSTALLED) {
+                if (info1.isSuggested) return -1; // suggestion is second to top
+                if (info2.isSuggested) return 1;
+            }
             return info1.iconPkg.compareTo(info2.iconPkg);
         }
     };

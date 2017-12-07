@@ -23,10 +23,10 @@ public class AboutActivity extends AppCompatActivity {
                 AppCompatDelegate.MODE_NIGHT_YES);
 
         View aboutPage = new AboutPage(this)
-                .setImage(R.drawable.ic_launcher)
+                .setImage(R.drawable.ic_launcher_foreground)
                 .setDescription(getString(R.string.aboutText))
-                .addWebsite(getString(R.string.aboutWebsite), getString(R.string.aboutWebsite))
-                .addEmail(getString(R.string.aboutEmail), getString(R.string.aboutEmail))
+                .addWebsite(getString(R.string.aboutWebsiteValue), getString(R.string.aboutWebsite))
+                .addEmail(getString(R.string.aboutEmailValue), getString(R.string.aboutEmailValue))
                 .addTwitter(getString(R.string.aboutTwitterValue), getString(R.string.aboutTwitter))
                 .addInstagram(getString(R.string.aboutInstagramValue), getString(R.string.aboutInstagram))
                 .addFacebook(getString(R.string.aboutFacebookValue), getString(R.string.aboutFacebook))
