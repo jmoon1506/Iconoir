@@ -1,12 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'signing_key'
+            keyPassword 'l33tdude'
+            storeFile file('/Users/default/Dropbox/dev/iconoir/keystore')
+            storePassword 'l33tdude'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.iconoir.settings"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 2
+        versionCode 9
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -15,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -28,7 +37,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.android.support:cardview-v7:27.0.0'
     implementation 'com.android.support:recyclerview-v7:27.0.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.github.medyo:android-about-page:1.2.2'

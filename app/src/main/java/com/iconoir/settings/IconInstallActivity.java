@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.iconoir.settings.IconListAdapter.getDrawableId;
 
@@ -78,7 +79,8 @@ public class IconInstallActivity extends AppCompatActivity {
         findViewById(R.id.suggestions).setVisibility(View.VISIBLE);
 
         try {
-            String iconLetter = iconPkg.substring(iconPkg.length() - 1).toLowerCase();
+            String[] tokens = iconPkg.split(Pattern.quote("."));
+            String iconLetter = tokens[tokens.length-1].replaceAll("[^a-z]+", "");
             if (!Character.isLetter(iconLetter.charAt(0))) {
                 throw new Exception("iconPkg does not end in a letter");
             }

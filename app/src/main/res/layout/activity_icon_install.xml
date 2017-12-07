@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.75"
-        app:srcCompat="@drawable/com_iconoir_a" />
+        app:srcCompat="@drawable/com_iconoir_a2" />
 
     <TextView
         android:id="@+id/settingsMsg"

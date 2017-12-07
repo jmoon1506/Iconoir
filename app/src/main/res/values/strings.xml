@@ -25,7 +25,7 @@
     <string name="sharedPrefLabel">IconoirSettings</string>
 
     <string-array name="iconoirPackages">
-        <item>com.iconoir.a</item>
+        <item>com.iconoir.a2</item>
         <item>com.iconoir.b</item>
         <item>com.iconoir.c</item>
         <item>com.iconoir.d</item>
@@ -63,7 +63,7 @@
         <item>com.iconoir.h</item>
         <item>com.iconoir.e</item>
         <item>com.iconoir.r</item>
-        <item>com.iconoir.a</item>
+        <item>com.iconoir.a2</item>
         <item>com.iconoir.o</item>
         <item>com.iconoir.n</item>
         <item>com.iconoir.d</item>

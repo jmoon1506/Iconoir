@@ -42,7 +42,8 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
     int currentIconPos = -1;
     List<Integer> hiddenPositions;
     Set<String> unreleasedPkgs = null; // store list of unreleased packages
-    Integer pkgsStillChecking = 0; // helps call updateIconList() when http responses done
+    Integer pkgsStillChecking; // helps call updateIconList() when http responses done
+//    Integer totalPkgsToCheck;
     Map<IconState, Integer> headerCounts;
     Map<IconState, Boolean> headerMinimized;
     List<Integer> minimizedPositions;
@@ -50,9 +51,9 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
 
     public IconListAdapter(MainActivity context) {
         super();
+        pkgsStillChecking = 0;
         this.context = context;
         packageManager = context.packageManager;
-
         headerMinimized = new HashMap<>();
         headerMinimized.put(IconState.INSTALLED, false);
         headerMinimized.put(IconState.NOT_INSTALLED, false);
@@ -76,13 +77,14 @@ public class IconListAdapter extends RecyclerView.Adapter<IconListAdapter.Custom
             }
             iconList.add(item);
         }
+//        totalPkgsToCheck = pkgsStillChecking;
         updateIconList();
         if (unreleasedPkgsSaved == null) {
             unreleasedPkgs = new HashSet<>();
             checkRelease();
         } else {
             unreleasedPkgs = new HashSet<>();
-//            unreleasedPkgs = unreleasedPkgsSaved;
+            unreleasedPkgs = unreleasedPkgsSaved;
         }
     }
 
