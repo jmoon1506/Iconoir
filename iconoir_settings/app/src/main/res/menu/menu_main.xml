@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+    <item android:id="@+id/alertWallpaper"
+        android:icon="@drawable/ic_alert"
+        android:title="@string/menuAlert"
+        app:showAsAction="ifRoom|withText"
+        android:visible="false"/>
+    <item android:id="@+id/advanced"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/menuAdvanced"
+        app:showAsAction="never|withText"/>
+    <item android:id="@+id/about"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="@string/menuAbout"
+        app:showAsAction="never|withText"/>
+
+</menu>

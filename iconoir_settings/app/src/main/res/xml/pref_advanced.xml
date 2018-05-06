@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.iconoir.settings.SetWallpaperPreference
+        android:key="setBackground"
+        android:summary=""
+        android:title=""
+        android:dialogMessage=""
+        android:positiveButtonText="Confirm"
+        android:negativeButtonText="Cancel"/>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="showSystemPkgs"
+        android:summary="@string/prefDescAllowHiddenPackages"
+        android:title="@string/prefTitleAllowHiddenPackages" />
+
+</PreferenceScreen>
